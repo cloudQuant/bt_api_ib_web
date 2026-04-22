@@ -87,7 +87,9 @@ class IbWebDataStream(BaseDataStream):
                     topic["conid"], topic.get("fields", ["31", "84", "85", "86", "88"])
                 )
 
-    def _subscribe_market_data(self, conid: Any, fields: list[str] | None = None) -> None:
+    def _subscribe_market_data(
+        self, conid: Any, fields: list[str] | None = None
+    ) -> None:
         payload = json.dumps({"fields": fields or ["31", "84", "85", "86", "88"]})
         msg = f"smd+{conid}+{payload}"
         if self._ws and self._running:
@@ -116,7 +118,11 @@ class IbWebDataStream(BaseDataStream):
     def _process_message(self, data: Any) -> None:
         if not isinstance(data, dict):
             return
-        if "conid" in data or "conidEx" in data or str(data.get("topic", "")).startswith("smd"):
+        if (
+            "conid" in data
+            or "conidEx" in data
+            or str(data.get("topic", "")).startswith("smd")
+        ):
             self.push_data({"type": "market_data", "exchange": "IB_WEB", "data": data})
         elif str(data.get("topic", "")).startswith("sor"):
             self.push_data({"type": "order_update", "exchange": "IB_WEB", "data": data})
@@ -133,7 +139,9 @@ class IbWebDataStream(BaseDataStream):
         self.state = ConnectionState.DISCONNECTED
         if self._running:
             time.sleep(self._reconnect_delay)
-            self._reconnect_delay = min(self._reconnect_delay * 2, self._max_reconnect_delay)
+            self._reconnect_delay = min(
+                self._reconnect_delay * 2, self._max_reconnect_delay
+            )
             try:
                 self.connect()
                 for conid in list(self._subscribed_conids):
@@ -276,7 +284,9 @@ class IbWebAccountStream(BaseDataStream):
         self.state = ConnectionState.DISCONNECTED
         if self._running:
             time.sleep(self._reconnect_delay)
-            self._reconnect_delay = min(self._reconnect_delay * 2, self._max_reconnect_delay)
+            self._reconnect_delay = min(
+                self._reconnect_delay * 2, self._max_reconnect_delay
+            )
             try:
                 self.connect()
             except Exception as exc:

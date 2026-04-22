@@ -20,7 +20,9 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         self.asset_type = _normalize_asset_type(normalized.get("asset_type"))
         normalized["asset_type"] = self.asset_type
         normalized["base_url"] = (
-            normalized.get("base_url") or normalized.get("rest_url") or "https://localhost:5000"
+            normalized.get("base_url")
+            or normalized.get("rest_url")
+            or "https://localhost:5000"
         )
         super().__init__(**normalized)
         self.kwargs = normalized
@@ -31,7 +33,9 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         self.aliases: dict[int, set[str]] = defaultdict(set)
         self.running = False
         self.thread: threading.Thread | None = None
-        self.timeout = float(normalized.get("gateway_startup_timeout_sec", 10.0) or 10.0)
+        self.timeout = float(
+            normalized.get("gateway_startup_timeout_sec", 10.0) or 10.0
+        )
 
     def connect(self) -> None:
         if self.running:
@@ -118,14 +122,17 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         side = str(payload.get("side") or "buy").lower()
         order_type = str(payload.get("order_type") or "").strip().lower()
         if not order_type:
-            order_type = f"{side}-{'market' if payload.get('price') in (None, '') else 'limit'}"
+            order_type = (
+                f'{side}-{"market" if payload.get("price") in (None, "") else "limit"}'
+            )
         extra_data = dict(payload.get("extra_data") or {})
         response = self.feed.make_order(
             symbol,
             volume=payload.get("size") or payload.get("volume") or 0,
             price=payload.get("price"),
             order_type=order_type,
-            client_order_id=payload.get("client_order_id") or payload.get("bt_order_ref"),
+            client_order_id=payload.get("client_order_id")
+            or payload.get("bt_order_ref"),
             extra_data=extra_data,
         )
         row = _first_row(response)
@@ -146,9 +153,16 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
 
     def cancel_order(self, payload: dict[str, Any]) -> dict[str, Any]:
         symbol = str(
-            payload.get("data_name") or payload.get("symbol") or payload.get("instrument") or ""
+            payload.get("data_name")
+            or payload.get("symbol")
+            or payload.get("instrument")
+            or ""
         ).strip()
-        order_id = payload.get("order_id") or payload.get("external_order_id") or payload.get("id")
+        order_id = (
+            payload.get("order_id")
+            or payload.get("external_order_id")
+            or payload.get("id")
+        )
         extra_data = dict(payload.get("extra_data") or {})
         response = self.feed.cancel_order(symbol, order_id, extra_data=extra_data)
         row = _first_row(response)
@@ -212,16 +226,24 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
             str(data.get("symbol") or conid_raw or "")
         }
         now = time.time()
-        price = _coerce_float(data.get("31") or data.get("last") or data.get("lastPrice"), 0.0)
-        bid_price = _coerce_float(data.get("84") or data.get("bid") or data.get("bidPrice"), None)
-        ask_price = _coerce_float(data.get("86") or data.get("ask") or data.get("askPrice"), None)
+        price = _coerce_float(
+            data.get("31") or data.get("last") or data.get("lastPrice"), 0.0
+        )
+        bid_price = _coerce_float(
+            data.get("84") or data.get("bid") or data.get("bidPrice"), None
+        )
+        ask_price = _coerce_float(
+            data.get("86") or data.get("ask") or data.get("askPrice"), None
+        )
         bid_volume = _coerce_float(
             data.get("85") or data.get("bidSize") or data.get("bid_volume"), None
         )
         ask_volume = _coerce_float(
             data.get("88") or data.get("askSize") or data.get("ask_volume"), None
         )
-        volume = _coerce_float(data.get("volume") or data.get("lastSize") or data.get("87"), 0.0)
+        volume = _coerce_float(
+            data.get("volume") or data.get("lastSize") or data.get("87"), 0.0
+        )
         instrument_id = str(conid_raw or data.get("symbol") or "")
         exchange_id = str(data.get("exchange") or data.get("listingExchange") or "")
         for alias in alias_candidates:

@@ -112,7 +112,9 @@ class IbWebRequestData(Feed):
 
     def _alternate_local_base_url(self) -> str:
         parsed = urlparse(self.base_url)
-        target_scheme = "http" if (parsed.scheme or "https").lower() == "https" else "https"
+        target_scheme = (
+            "http" if (parsed.scheme or "https").lower() == "https" else "https"
+        )
         return parsed._replace(scheme=target_scheme).geturl()
 
     def _rebuild_http_client(self) -> None:
@@ -173,7 +175,9 @@ class IbWebRequestData(Feed):
                     raise
                 attempted_fallback = True
 
-    def _get(self, endpoint: str, params: dict[str, Any] | None = None, **kwargs: Any) -> Any:
+    def _get(
+        self, endpoint: str, params: dict[str, Any] | None = None, **kwargs: Any
+    ) -> Any:
         return self._request("GET", endpoint, params=params, **kwargs)
 
     def _post(self, endpoint: str, json_data: Any = None, **kwargs: Any) -> Any:
@@ -279,9 +283,13 @@ class IbWebRequestData(Feed):
             if attempt == "existing" and not self._can_initialize_session():
                 break
         self._authenticated = False
-        self._last_connect_error = last_error or RuntimeError("IB Web authentication failed")
+        self._last_connect_error = last_error or RuntimeError(
+            "IB Web authentication failed"
+        )
         if self._last_connect_error:
-            self.request_logger.warning("IB Web connect failed: %s", self._last_connect_error)
+            self.request_logger.warning(
+                "IB Web connect failed: %s", self._last_connect_error
+            )
 
     def disconnect(self) -> None:
         self._authenticated = False
@@ -311,7 +319,9 @@ class IbWebRequestData(Feed):
     def search_contract(
         self, symbol: str, sec_type: str = "STK", extra_data: Any = None, **kwargs: Any
     ) -> Any:
-        return self._get("/iserver/secdef/search", params={"symbol": symbol, "secType": sec_type})
+        return self._get(
+            "/iserver/secdef/search", params={"symbol": symbol, "secType": sec_type}
+        )
 
     def resolve_conid(self, symbol: str, sec_type: str = "STK") -> Any:
         if sec_type == "STK":
@@ -331,7 +341,8 @@ class IbWebRequestData(Feed):
     def get_tick(self, symbol: Any, extra_data: Any = None, **kwargs: Any) -> Any:
         conid = self._resolve_conid_param(symbol, extra_data)
         field_str = ",".join(
-            str(item) for item in kwargs.get("fields", self._params.default_snapshot_fields)
+            str(item)
+            for item in kwargs.get("fields", self._params.default_snapshot_fields)
         )
         params = {"conids": str(conid), "fields": field_str}
         self._get("/iserver/marketdata/snapshot", params=params)
@@ -341,7 +352,9 @@ class IbWebRequestData(Feed):
             return response[0]
         return response
 
-    def get_depth(self, symbol: Any, count: int = 5, extra_data: Any = None, **kwargs: Any) -> Any:
+    def get_depth(
+        self, symbol: Any, count: int = 5, extra_data: Any = None, **kwargs: Any
+    ) -> Any:
         return self.get_tick(
             symbol, extra_data=extra_data, fields=["84", "85", "86", "88"], **kwargs
         )
@@ -369,7 +382,9 @@ class IbWebRequestData(Feed):
         if isinstance(response, list) and response:
             first = response[0]
             if isinstance(first, dict) and "id" in first and "message" in first:
-                return self._post(f"/iserver/reply/{first['id']}", json_data={"confirmed": True})
+                return self._post(
+                    f'/iserver/reply/{first["id"]}', json_data={"confirmed": True}
+                )
         return response
 
     def _get_account_id(self, extra_data: Any = None) -> str:
@@ -421,9 +436,13 @@ class IbWebRequestData(Feed):
     def cancel_order(
         self, symbol: Any, order_id: Any, extra_data: Any = None, **kwargs: Any
     ) -> Any:
-        return self._delete(f"/iserver/account/{self._get_account_id(extra_data)}/order/{order_id}")
+        return self._delete(
+            f"/iserver/account/{self._get_account_id(extra_data)}/order/{order_id}"
+        )
 
-    def get_open_orders(self, symbol: Any = None, extra_data: Any = None, **kwargs: Any) -> Any:
+    def get_open_orders(
+        self, symbol: Any = None, extra_data: Any = None, **kwargs: Any
+    ) -> Any:
         params: dict[str, Any] = {"force": "true"}
         if self.account_id:
             params["accountId"] = self.account_id
@@ -431,11 +450,15 @@ class IbWebRequestData(Feed):
             params["filters"] = extra_data["filters"]
         return self._get("/iserver/account/orders", params=params)
 
-    def get_position(self, symbol: Any = None, extra_data: Any = None, **kwargs: Any) -> Any:
+    def get_position(
+        self, symbol: Any = None, extra_data: Any = None, **kwargs: Any
+    ) -> Any:
         account_id = self._get_account_id(extra_data)
         if self.has_cookies():
             try:
-                return self._get(f"/portfolio/{account_id}/positions/{kwargs.get('page_id', 0)}")
+                return self._get(
+                    f'/portfolio/{account_id}/positions/{kwargs.get("page_id", 0)}'
+                )
             except Exception as exc:
                 self.request_logger.debug(
                     "Portfolio positions endpoint failed, falling back: %s", exc
@@ -445,10 +468,14 @@ class IbWebRequestData(Feed):
             "Please set IB_WEB_COOKIE_SOURCE=browser or use a cookie file."
         )
 
-    def get_account(self, symbol: str = "ALL", extra_data: Any = None, **kwargs: Any) -> Any:
+    def get_account(
+        self, symbol: str = "ALL", extra_data: Any = None, **kwargs: Any
+    ) -> Any:
         return self._get(f"/iserver/account/{self._get_account_id(extra_data)}/summary")
 
-    def get_balance(self, symbol: Any = None, extra_data: Any = None, **kwargs: Any) -> Any:
+    def get_balance(
+        self, symbol: Any = None, extra_data: Any = None, **kwargs: Any
+    ) -> Any:
         return self._get(f"/iserver/account/{self._get_account_id(extra_data)}/summary")
 
     def get_deals(
@@ -478,7 +505,13 @@ class IbWebRequestData(Feed):
 
     def _parse_order_type(self, order_type: str) -> tuple[str, str]:
         value = order_type.lower()
-        side = "BUY" if value.startswith("buy") else "SELL" if value.startswith("sell") else "BUY"
+        side = (
+            "BUY"
+            if value.startswith("buy")
+            else "SELL"
+            if value.startswith("sell")
+            else "BUY"
+        )
         if "market" in value:
             ib_type = "MKT"
         elif "stop_limit" in value or "stop-limit" in value:

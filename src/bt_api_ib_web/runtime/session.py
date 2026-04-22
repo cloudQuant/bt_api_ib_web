@@ -17,7 +17,9 @@ def project_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
-def resolve_local_path(path_value: str | Path, base_dir: str | Path | None = None) -> Path:
+def resolve_local_path(
+    path_value: str | Path, base_dir: str | Path | None = None
+) -> Path:
     raw_path = Path(path_value).expanduser()
     if raw_path.is_absolute():
         return raw_path
@@ -27,14 +29,18 @@ def resolve_local_path(path_value: str | Path, base_dir: str | Path | None = Non
 
 def to_relative_path(path_value: str | Path, base_dir: str | Path | None = None) -> str:
     target = resolve_local_path(path_value, base_dir=base_dir)
-    root = Path(base_dir).expanduser().resolve() if base_dir else project_root().resolve()
+    root = (
+        Path(base_dir).expanduser().resolve() if base_dir else project_root().resolve()
+    )
     try:
         return target.relative_to(root).as_posix()
     except ValueError:
         return os.path.relpath(target, root).replace("\\", "/")
 
 
-def normalize_cookie_source(cookie_source: str | None, base_dir: str | Path | None = None) -> str:
+def normalize_cookie_source(
+    cookie_source: str | None, base_dir: str | Path | None = None
+) -> str:
     value = str(cookie_source or "").strip()
     if not value or value in {"browser", "env"} or (";" in value and "=" in value):
         return value
@@ -52,7 +58,9 @@ def load_ib_web_settings(
     env_file: str | Path | None = None,
 ) -> dict[str, Any]:
     env_path = (
-        resolve_local_path(env_file, base_dir=base_dir) if env_file else project_root() / ".env"
+        resolve_local_path(env_file, base_dir=base_dir)
+        if env_file
+        else project_root() / ".env"
     )
     env_values = dotenv_values(env_path)
     data = dict(overrides or {})
@@ -82,8 +90,12 @@ def load_ib_web_settings(
             return default
 
     resolved_base_dir = Path(base_dir).expanduser() if base_dir else project_root()
-    cookie_output_value = str(pick("cookie_output", pick("IB_WEB_COOKIE_OUTPUT", "")) or "").strip()
-    cookie_source_value = str(pick("cookie_source", pick("IB_WEB_COOKIE_SOURCE", "")) or "").strip()
+    cookie_output_value = str(
+        pick("cookie_output", pick("IB_WEB_COOKIE_OUTPUT", "")) or ""
+    ).strip()
+    cookie_source_value = str(
+        pick("cookie_source", pick("IB_WEB_COOKIE_SOURCE", "")) or ""
+    ).strip()
     cookie_output_path = (
         resolve_local_path(cookie_output_value, base_dir=resolved_base_dir)
         if cookie_output_value
@@ -96,23 +108,37 @@ def load_ib_web_settings(
         "account_id": str(pick("account_id", pick("IB_WEB_ACCOUNT_ID", ""))).strip(),
         "verify_ssl": pick_bool("verify_ssl", pick_bool("IB_WEB_VERIFY_SSL", False)),
         "timeout": pick_int("timeout", pick_int("IB_WEB_TIMEOUT", 10)),
-        "cookie_source": normalize_cookie_source(cookie_source_value, base_dir=resolved_base_dir),
+        "cookie_source": normalize_cookie_source(
+            cookie_source_value, base_dir=resolved_base_dir
+        ),
         "cookie_browser": str(
             pick("cookie_browser", pick("IB_WEB_COOKIE_BROWSER", "chrome"))
         ).strip()
         or "chrome",
-        "cookie_path": str(pick("cookie_path", pick("IB_WEB_COOKIE_PATH", "/sso"))).strip()
+        "cookie_path": str(
+            pick("cookie_path", pick("IB_WEB_COOKIE_PATH", "/sso"))
+        ).strip()
         or "/sso",
         "username": str(pick("username", pick("IB_WEB_USERNAME", ""))).strip(),
         "password": str(pick("password", pick("IB_WEB_PASSWORD", ""))).strip(),
-        "login_mode": str(pick("login_mode", pick("IB_WEB_LOGIN_MODE", "paper"))).strip().lower()
+        "login_mode": str(pick("login_mode", pick("IB_WEB_LOGIN_MODE", "paper")))
+        .strip()
+        .lower()
         or "paper",
-        "login_browser": str(pick("login_browser", pick("IB_WEB_LOGIN_BROWSER", "chrome"))).strip()
+        "login_browser": str(
+            pick("login_browser", pick("IB_WEB_LOGIN_BROWSER", "chrome"))
+        ).strip()
         or "chrome",
-        "login_headless": pick_bool("login_headless", pick_bool("IB_WEB_LOGIN_HEADLESS", False)),
-        "login_timeout": pick_int("login_timeout", pick_int("IB_WEB_LOGIN_TIMEOUT", 180)),
+        "login_headless": pick_bool(
+            "login_headless", pick_bool("IB_WEB_LOGIN_HEADLESS", False)
+        ),
+        "login_timeout": pick_int(
+            "login_timeout", pick_int("IB_WEB_LOGIN_TIMEOUT", 180)
+        ),
         "cookie_output": str(cookie_output_path),
-        "cookie_output_relative": to_relative_path(cookie_output_path, base_dir=resolved_base_dir),
+        "cookie_output_relative": to_relative_path(
+            cookie_output_path, base_dir=resolved_base_dir
+        ),
         "cookie_base_dir": str(resolved_base_dir),
         "env_file": str(env_path),
     }
@@ -190,7 +216,9 @@ def current_cookie_payload(settings: dict[str, Any]) -> dict[str, str]:
     )
 
 
-def cookies_are_authenticated(settings: dict[str, Any], cookies: dict[str, str]) -> bool:
+def cookies_are_authenticated(
+    settings: dict[str, Any], cookies: dict[str, str]
+) -> bool:
     if not cookies:
         return False
     try:
@@ -210,7 +238,9 @@ def ensure_authenticated_session(
     base_dir: str | Path | None = None,
     env_file: str | Path | None = None,
 ) -> dict[str, Any]:
-    settings = load_ib_web_settings(overrides=overrides, base_dir=base_dir, env_file=env_file)
+    settings = load_ib_web_settings(
+        overrides=overrides, base_dir=base_dir, env_file=env_file
+    )
     cookies = current_cookie_payload(settings)
     if not cookies or not cookies_are_authenticated(settings, cookies):
         raise RuntimeError(
@@ -224,7 +254,9 @@ def ensure_authenticated_session(
             verify_ssl=bool(settings.get("verify_ssl", False)),
             timeout=int(settings.get("timeout", 10)),
         )
-        account_id = pick_account_id(accounts, str(settings.get("login_mode") or "paper"))
+        account_id = pick_account_id(
+            accounts, str(settings.get("login_mode") or "paper")
+        )
     cookie_output = str(
         settings.get("cookie_output")
         or default_cookie_output(base_dir=settings.get("cookie_base_dir"))

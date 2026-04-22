@@ -57,33 +57,44 @@ class IbWebExchangeData(ExchangeData):
 
         self.exchange_name = str(asset_config.exchange_name or "")
         self.rest_url = str(
-            asset_config.rest_url or (base_urls.rest.get("default", "") if base_urls else "")
+            asset_config.rest_url
+            or (base_urls.rest.get("default", "") if base_urls else "")
         )
         self.wss_url = str(
-            asset_config.wss_url or (base_urls.wss.get("default", "") if base_urls else "")
+            asset_config.wss_url
+            or (base_urls.wss.get("default", "") if base_urls else "")
         )
         self.acct_wss_url = str(
-            base_urls.acct_wss.get("default", self.wss_url) if base_urls else self.wss_url
+            base_urls.acct_wss.get("default", self.wss_url)
+            if base_urls
+            else self.wss_url
         )
         self.symbol_format = asset_config.symbol_format
         self.rest_paths = dict(asset_config.rest_paths)
         self.wss_paths = dict(asset_config.wss_paths)
         self.kline_periods = dict(config.kline_periods or {})
-        self.reverse_kline_periods = {value: key for key, value in self.kline_periods.items()}
+        self.reverse_kline_periods = {
+            value: key for key, value in self.kline_periods.items()
+        }
         self.status_dict = dict(config.status_dict or {})
         self.sec_type_map = {
-            str(key): str(value) for key, value in (raw.get("sec_type_map") or {}).items()
+            str(key): str(value)
+            for key, value in (raw.get("sec_type_map") or {}).items()
         }
         self.market_data_fields = {
-            str(key): str(value) for key, value in (raw.get("market_data_fields") or {}).items()
+            str(key): str(value)
+            for key, value in (raw.get("market_data_fields") or {}).items()
         }
         self.default_snapshot_fields = [
             str(value) for value in (raw.get("default_snapshot_fields") or [])
         ]
         self.order_type_map = {
-            str(key): str(value) for key, value in (raw.get("order_type_map") or {}).items()
+            str(key): str(value)
+            for key, value in (raw.get("order_type_map") or {}).items()
         }
-        self.tif_map = {str(key): str(value) for key, value in (raw.get("tif_map") or {}).items()}
+        self.tif_map = {
+            str(key): str(value) for key, value in (raw.get("tif_map") or {}).items()
+        }
         self.rate_limits_config = {
             str(rule.name): rule.limit / rule.interval for rule in config.rate_limits
         }

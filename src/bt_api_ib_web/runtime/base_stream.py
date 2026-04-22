@@ -34,7 +34,9 @@ class BaseDataStream(ABC):
     def state(self, new_state: ConnectionState) -> None:
         old_state = self._state
         self._state = new_state
-        self.logger.info(f"{self.stream_name} state: {old_state.value} -> {new_state.value}")
+        self.logger.info(
+            f"{self.stream_name} state: {old_state.value} -> {new_state.value}"
+        )
 
     @abstractmethod
     def connect(self) -> None: ...
@@ -67,9 +69,14 @@ class BaseDataStream(ABC):
     def wait_connected(self, timeout: float = 30.0, interval: float = 0.5) -> bool:
         elapsed = 0.0
         while elapsed < timeout:
-            if self._state in (ConnectionState.CONNECTED, ConnectionState.AUTHENTICATED):
+            if self._state in (
+                ConnectionState.CONNECTED,
+                ConnectionState.AUTHENTICATED,
+            ):
                 return True
             time.sleep(interval)
             elapsed += interval
-        self.logger.warning(f"{self.stream_name}: wait_connected timeout after {timeout}s")
+        self.logger.warning(
+            f"{self.stream_name}: wait_connected timeout after {timeout}s"
+        )
         return False

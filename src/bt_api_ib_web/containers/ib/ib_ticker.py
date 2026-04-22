@@ -54,7 +54,11 @@ class IbTickerData(_IbContainerBase):
         return self
 
     def get_local_update_time(self) -> float:
-        return float(self.timestamp_val) if isinstance(self.timestamp_val, (int, float)) else 0.0
+        return (
+            float(self.timestamp_val)
+            if isinstance(self.timestamp_val, (int, float))
+            else 0.0
+        )
 
     def get_symbol_name(self) -> str:
         return str(self.contract_symbol or self.symbol_name or "")
@@ -66,7 +70,11 @@ class IbTickerData(_IbContainerBase):
         return str(self.asset_type)
 
     def get_server_time(self) -> float | None:
-        return float(self.timestamp_val) if isinstance(self.timestamp_val, (int, float)) else None
+        return (
+            float(self.timestamp_val)
+            if isinstance(self.timestamp_val, (int, float))
+            else None
+        )
 
     def get_bid_price(self) -> float | None:
         return self.bid_val

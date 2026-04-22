@@ -48,7 +48,9 @@ def get_cookies_from_browser(
                 if cookie_jar:
                     break
             except Exception as exc:
-                logger.debug("Browser cookie extraction failed for %s: %s", loader.__name__, exc)
+                logger.debug(
+                    "Browser cookie extraction failed for %s: %s", loader.__name__, exc
+                )
     if not cookie_jar:
         return {}
     cookies: dict[str, str] = {}
