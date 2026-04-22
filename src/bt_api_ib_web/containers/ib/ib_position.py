@@ -10,11 +10,11 @@ class IbPositionData(_IbContainerBase):
         self,
         position_info: Any,
         symbol_name: Any = None,
-        asset_type: Any = "STK",
+        asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
         super().__init__(
-            "position_info",
+            'position_info',
             position_info,
             symbol_name=symbol_name,
             asset_type=asset_type,
@@ -36,16 +36,16 @@ class IbPositionData(_IbContainerBase):
         if self._initialized:
             return self
         info = self.position_info if isinstance(self.position_info, dict) else {}
-        self.account = info.get("account", "")
-        self.contract_symbol = info.get("symbol", self.symbol_name)
-        self.sec_type = info.get("secType", self.asset_type)
-        self.position_val = _to_float(info.get("position"))
-        self.avg_cost = _to_float(info.get("avgCost"))
-        self.market_price_val = _to_float(info.get("marketPrice"))
-        self.market_value = _to_float(info.get("marketValue"))
-        self.unrealized_pnl_val = _to_float(info.get("unrealizedPNL"))
-        self.realized_pnl_val = _to_float(info.get("realizedPNL"))
-        self.currency = str(info.get("currency", "USD"))
+        self.account = info.get('account', '')
+        self.contract_symbol = info.get('symbol', self.symbol_name)
+        self.sec_type = info.get('secType', self.asset_type)
+        self.position_val = _to_float(info.get('position'))
+        self.avg_cost = _to_float(info.get('avgCost'))
+        self.market_price_val = _to_float(info.get('marketPrice'))
+        self.market_value = _to_float(info.get('marketValue'))
+        self.unrealized_pnl_val = _to_float(info.get('unrealizedPNL'))
+        self.realized_pnl_val = _to_float(info.get('realizedPNL'))
+        self.currency = str(info.get('currency', 'USD'))
         self._initialized = True
         return self
 
@@ -53,7 +53,7 @@ class IbPositionData(_IbContainerBase):
         return str(self.sec_type or self.asset_type)
 
     def get_symbol_name(self) -> str:
-        return str(self.contract_symbol or self.symbol_name or "")
+        return str(self.contract_symbol or self.symbol_name or '')
 
     def get_position_volume(self) -> float:
         return self.position_val or 0.0
@@ -81,15 +81,15 @@ class IbPositionData(_IbContainerBase):
 
     def get_all_data(self) -> dict[str, Any]:
         return {
-            "exchange_name": self.exchange_name,
-            "account": self.account,
-            "symbol": self.contract_symbol,
-            "sec_type": self.sec_type,
-            "position": self.position_val,
-            "avg_cost": self.avg_cost,
-            "market_price": self.market_price_val,
-            "market_value": self.market_value,
-            "unrealized_pnl": self.unrealized_pnl_val,
-            "realized_pnl": self.realized_pnl_val,
-            "currency": self.currency,
+            'exchange_name': self.exchange_name,
+            'account': self.account,
+            'symbol': self.contract_symbol,
+            'sec_type': self.sec_type,
+            'position': self.position_val,
+            'avg_cost': self.avg_cost,
+            'market_price': self.market_price_val,
+            'market_value': self.market_value,
+            'unrealized_pnl': self.unrealized_pnl_val,
+            'realized_pnl': self.realized_pnl_val,
+            'currency': self.currency,
         }

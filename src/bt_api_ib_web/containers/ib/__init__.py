@@ -7,12 +7,12 @@ from bt_api_ib_web.containers.ib.ib_ticker import IbTickerData
 from bt_api_ib_web.containers.ib.ib_trade import IbTradeData
 
 __all__ = [
-    "IB_ORDER_STATUS_MAP",
-    "IbAccountData",
-    "IbBarData",
-    "IbContract",
-    "IbOrderData",
-    "IbPositionData",
-    "IbTickerData",
-    "IbTradeData",
+    'IB_ORDER_STATUS_MAP',
+    'IbAccountData',
+    'IbBarData',
+    'IbContract',
+    'IbOrderData',
+    'IbPositionData',
+    'IbTickerData',
+    'IbTradeData',
 ]

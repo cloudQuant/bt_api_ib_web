@@ -12,7 +12,7 @@ def _to_int(value: Any) -> int:
 
 
 class _IbContainerBase:
-    exchange_name = "IB"
+    exchange_name = 'IB'
 
     def __init__(
         self,
@@ -20,7 +20,7 @@ class _IbContainerBase:
         payload: Any,
         *,
         symbol_name: Any = None,
-        asset_type: Any = "STK",
+        asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
         setattr(self, payload_name, payload)

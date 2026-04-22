@@ -10,11 +10,11 @@ class IbTradeData(_IbContainerBase):
         self,
         trade_info: Any,
         symbol_name: Any = None,
-        asset_type: Any = "STK",
+        asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
         super().__init__(
-            "trade_info",
+            'trade_info',
             trade_info,
             symbol_name=symbol_name,
             asset_type=asset_type,
@@ -37,17 +37,17 @@ class IbTradeData(_IbContainerBase):
         if self._initialized:
             return self
         info = self.trade_info if isinstance(self.trade_info, dict) else {}
-        self.exec_id = str(info.get("execId", ""))
-        self.order_id_val = info.get("orderId")
-        self.perm_id = info.get("permId")
-        self.side = str(info.get("side", "BOT"))
-        self.shares = _to_float(info.get("shares"))
-        self.price_val = _to_float(info.get("price"))
-        self.cum_qty = _to_float(info.get("cumQty"))
-        self.avg_price_val = _to_float(info.get("avgPrice"))
-        self.exec_time = info.get("time", "")
-        self.commission_val = _to_float(info.get("commission"))
-        self.exchange_val = str(info.get("exchange", ""))
+        self.exec_id = str(info.get('execId', ''))
+        self.order_id_val = info.get('orderId')
+        self.perm_id = info.get('permId')
+        self.side = str(info.get('side', 'BOT'))
+        self.shares = _to_float(info.get('shares'))
+        self.price_val = _to_float(info.get('price'))
+        self.cum_qty = _to_float(info.get('cumQty'))
+        self.avg_price_val = _to_float(info.get('avgPrice'))
+        self.exec_time = info.get('time', '')
+        self.commission_val = _to_float(info.get('commission'))
+        self.exchange_val = str(info.get('exchange', ''))
         self._initialized = True
         return self
 
@@ -55,7 +55,7 @@ class IbTradeData(_IbContainerBase):
         return str(self.asset_type)
 
     def get_symbol_name(self) -> str:
-        return str(self.symbol_name or "")
+        return str(self.symbol_name or '')
 
     def get_server_time(self) -> str | None:
         return self.exec_time
@@ -70,7 +70,7 @@ class IbTradeData(_IbContainerBase):
         return self.perm_id
 
     def get_trade_side(self) -> str:
-        return "buy" if self.side == "BOT" else "sell"
+        return 'buy' if self.side == 'BOT' else 'sell'
 
     def get_trade_offset(self) -> None:
         return None
@@ -88,19 +88,19 @@ class IbTradeData(_IbContainerBase):
         return self.commission_val or 0.0
 
     def get_trade_fee_symbol(self) -> str:
-        return "USD"
+        return 'USD'
 
     def get_all_data(self) -> dict[str, Any]:
         return {
-            "exchange_name": self.exchange_name,
-            "exec_id": self.exec_id,
-            "order_id": self.order_id_val,
-            "side": self.side,
-            "shares": self.shares,
-            "price": self.price_val,
-            "cum_qty": self.cum_qty,
-            "avg_price": self.avg_price_val,
-            "exec_time": self.exec_time,
-            "commission": self.commission_val,
-            "exchange": self.exchange_val,
+            'exchange_name': self.exchange_name,
+            'exec_id': self.exec_id,
+            'order_id': self.order_id_val,
+            'side': self.side,
+            'shares': self.shares,
+            'price': self.price_val,
+            'cum_qty': self.cum_qty,
+            'avg_price': self.avg_price_val,
+            'exec_time': self.exec_time,
+            'commission': self.commission_val,
+            'exchange': self.exchange_val,
         }

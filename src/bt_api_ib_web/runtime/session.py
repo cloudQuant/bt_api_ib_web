@@ -35,21 +35,21 @@ def to_relative_path(path_value: str | Path, base_dir: str | Path | None = None)
     try:
         return target.relative_to(root).as_posix()
     except ValueError:
-        return os.path.relpath(target, root).replace("\\", "/")
+        return os.path.relpath(target, root).replace('\\', '/')
 
 
 def normalize_cookie_source(
     cookie_source: str | None, base_dir: str | Path | None = None
 ) -> str:
-    value = str(cookie_source or "").strip()
-    if not value or value in {"browser", "env"} or (";" in value and "=" in value):
+    value = str(cookie_source or '').strip()
+    if not value or value in {'browser', 'env'} or (';' in value and '=' in value):
         return value
-    path_value = value[5:] if value.startswith("file:") else value
-    return f"file:{resolve_local_path(path_value, base_dir=base_dir)}"
+    path_value = value[5:] if value.startswith('file:') else value
+    return f'file:{resolve_local_path(path_value, base_dir=base_dir)}'
 
 
 def default_cookie_output(base_dir: str | Path | None = None) -> Path:
-    return resolve_local_path(Path("configs") / "ibkr_cookies.json", base_dir=base_dir)
+    return resolve_local_path(Path('configs') / 'ibkr_cookies.json', base_dir=base_dir)
 
 
 def load_ib_web_settings(
@@ -60,20 +60,20 @@ def load_ib_web_settings(
     env_path = (
         resolve_local_path(env_file, base_dir=base_dir)
         if env_file
-        else project_root() / ".env"
+        else project_root() / '.env'
     )
     env_values = dotenv_values(env_path)
     data = dict(overrides or {})
 
-    def pick(name: str, default: Any = "") -> Any:
+    def pick(name: str, default: Any = '') -> Any:
         value = data.get(name)
-        if value not in (None, ""):
+        if value not in (None, ''):
             return value
         env_value = os.environ.get(name)
-        if env_value not in (None, ""):
+        if env_value not in (None, ''):
             return env_value
         file_value = env_values.get(name)
-        if file_value not in (None, ""):
+        if file_value not in (None, ''):
             return file_value
         return default
 
@@ -81,7 +81,7 @@ def load_ib_web_settings(
         value = pick(name, default)
         if isinstance(value, bool):
             return value
-        return str(value).strip().lower() in {"1", "true", "yes", "on"}
+        return str(value).strip().lower() in {'1', 'true', 'yes', 'on'}
 
     def pick_int(name: str, default: int) -> int:
         try:
@@ -91,10 +91,10 @@ def load_ib_web_settings(
 
     resolved_base_dir = Path(base_dir).expanduser() if base_dir else project_root()
     cookie_output_value = str(
-        pick("cookie_output", pick("IB_WEB_COOKIE_OUTPUT", "")) or ""
+        pick('cookie_output', pick('IB_WEB_COOKIE_OUTPUT', '')) or ''
     ).strip()
     cookie_source_value = str(
-        pick("cookie_source", pick("IB_WEB_COOKIE_SOURCE", "")) or ""
+        pick('cookie_source', pick('IB_WEB_COOKIE_SOURCE', '')) or ''
     ).strip()
     cookie_output_path = (
         resolve_local_path(cookie_output_value, base_dir=resolved_base_dir)
@@ -102,60 +102,60 @@ def load_ib_web_settings(
         else default_cookie_output(base_dir=resolved_base_dir)
     )
     return {
-        "base_url": str(
-            pick("base_url", pick("IB_WEB_BASE_URL", "https://localhost:5000"))
+        'base_url': str(
+            pick('base_url', pick('IB_WEB_BASE_URL', 'https://localhost:5000'))
         ).strip(),
-        "account_id": str(pick("account_id", pick("IB_WEB_ACCOUNT_ID", ""))).strip(),
-        "verify_ssl": pick_bool("verify_ssl", pick_bool("IB_WEB_VERIFY_SSL", False)),
-        "timeout": pick_int("timeout", pick_int("IB_WEB_TIMEOUT", 10)),
-        "cookie_source": normalize_cookie_source(
+        'account_id': str(pick('account_id', pick('IB_WEB_ACCOUNT_ID', ''))).strip(),
+        'verify_ssl': pick_bool('verify_ssl', pick_bool('IB_WEB_VERIFY_SSL', False)),
+        'timeout': pick_int('timeout', pick_int('IB_WEB_TIMEOUT', 10)),
+        'cookie_source': normalize_cookie_source(
             cookie_source_value, base_dir=resolved_base_dir
         ),
-        "cookie_browser": str(
-            pick("cookie_browser", pick("IB_WEB_COOKIE_BROWSER", "chrome"))
+        'cookie_browser': str(
+            pick('cookie_browser', pick('IB_WEB_COOKIE_BROWSER', 'chrome'))
         ).strip()
-        or "chrome",
-        "cookie_path": str(
-            pick("cookie_path", pick("IB_WEB_COOKIE_PATH", "/sso"))
+        or 'chrome',
+        'cookie_path': str(
+            pick('cookie_path', pick('IB_WEB_COOKIE_PATH', '/sso'))
         ).strip()
-        or "/sso",
-        "username": str(pick("username", pick("IB_WEB_USERNAME", ""))).strip(),
-        "password": str(pick("password", pick("IB_WEB_PASSWORD", ""))).strip(),
-        "login_mode": str(pick("login_mode", pick("IB_WEB_LOGIN_MODE", "paper")))
+        or '/sso',
+        'username': str(pick('username', pick('IB_WEB_USERNAME', ''))).strip(),
+        'password': str(pick('password', pick('IB_WEB_PASSWORD', ''))).strip(),
+        'login_mode': str(pick('login_mode', pick('IB_WEB_LOGIN_MODE', 'paper')))
         .strip()
         .lower()
-        or "paper",
-        "login_browser": str(
-            pick("login_browser", pick("IB_WEB_LOGIN_BROWSER", "chrome"))
+        or 'paper',
+        'login_browser': str(
+            pick('login_browser', pick('IB_WEB_LOGIN_BROWSER', 'chrome'))
         ).strip()
-        or "chrome",
-        "login_headless": pick_bool(
-            "login_headless", pick_bool("IB_WEB_LOGIN_HEADLESS", False)
+        or 'chrome',
+        'login_headless': pick_bool(
+            'login_headless', pick_bool('IB_WEB_LOGIN_HEADLESS', False)
         ),
-        "login_timeout": pick_int(
-            "login_timeout", pick_int("IB_WEB_LOGIN_TIMEOUT", 180)
+        'login_timeout': pick_int(
+            'login_timeout', pick_int('IB_WEB_LOGIN_TIMEOUT', 180)
         ),
-        "cookie_output": str(cookie_output_path),
-        "cookie_output_relative": to_relative_path(
+        'cookie_output': str(cookie_output_path),
+        'cookie_output_relative': to_relative_path(
             cookie_output_path, base_dir=resolved_base_dir
         ),
-        "cookie_base_dir": str(resolved_base_dir),
-        "env_file": str(env_path),
+        'cookie_base_dir': str(resolved_base_dir),
+        'env_file': str(env_path),
     }
 
 
 def api_base_url(base_url: str) -> str:
-    value = str(base_url or "").rstrip("/")
-    if value.endswith("/v1/api"):
+    value = str(base_url or '').rstrip('/')
+    if value.endswith('/v1/api'):
         return value
-    return value + "/v1/api"
+    return value + '/v1/api'
 
 
 def auth_status(
     base_url: str, cookies: dict[str, str], verify_ssl: bool = False, timeout: int = 10
 ) -> requests.Response:
     return requests.post(
-        f"{api_base_url(base_url)}/iserver/auth/status",
+        f'{api_base_url(base_url)}/iserver/auth/status',
         cookies=cookies,
         verify=verify_ssl,
         timeout=timeout,
@@ -171,14 +171,14 @@ def auth_response_is_authenticated(response: requests.Response) -> bool:
         return False
     if not isinstance(payload, dict):
         return False
-    return bool(payload.get("authenticated", False) or payload.get("connected", False))
+    return bool(payload.get('authenticated', False) or payload.get('connected', False))
 
 
 def fetch_accounts(
     base_url: str, cookies: dict[str, str], verify_ssl: bool = False, timeout: int = 10
 ) -> list[dict[str, Any]]:
     response = requests.get(
-        f"{api_base_url(base_url)}/portfolio/accounts",
+        f'{api_base_url(base_url)}/portfolio/accounts',
         cookies=cookies,
         verify=verify_ssl,
         timeout=timeout,
@@ -190,29 +190,29 @@ def fetch_accounts(
 
 
 def pick_account_id(accounts: list[dict[str, Any]], login_mode: str) -> str:
-    if login_mode == "paper":
+    if login_mode == 'paper':
         for account in accounts:
-            for key in ("accountId", "id", "accountIdKey"):
-                value = str(account.get(key) or "")
-                if value.upper().startswith("DU"):
+            for key in ('accountId', 'id', 'accountIdKey'):
+                value = str(account.get(key) or '')
+                if value.upper().startswith('DU'):
                     return value
     for account in accounts:
-        for key in ("accountId", "id", "accountIdKey"):
-            value = str(account.get(key) or "")
+        for key in ('accountId', 'id', 'accountIdKey'):
+            value = str(account.get(key) or '')
             if value:
                 return value
-    return ""
+    return ''
 
 
 def current_cookie_payload(settings: dict[str, Any]) -> dict[str, str]:
-    source = str(settings.get("cookie_source") or "")
+    source = str(settings.get('cookie_source') or '')
     if not source:
         return {}
     return get_ibkr_cookies(
-        base_url=str(settings.get("base_url") or "https://localhost:5000"),
+        base_url=str(settings.get('base_url') or 'https://localhost:5000'),
         cookie_source=source,
-        browser=str(settings.get("cookie_browser") or "chrome"),
-        cookie_path=str(settings.get("cookie_path") or "/sso"),
+        browser=str(settings.get('cookie_browser') or 'chrome'),
+        cookie_path=str(settings.get('cookie_path') or '/sso'),
     )
 
 
@@ -223,10 +223,10 @@ def cookies_are_authenticated(
         return False
     try:
         response = auth_status(
-            str(settings.get("base_url") or "https://localhost:5000"),
+            str(settings.get('base_url') or 'https://localhost:5000'),
             cookies,
-            verify_ssl=bool(settings.get("verify_ssl", False)),
-            timeout=int(settings.get("timeout", 10)),
+            verify_ssl=bool(settings.get('verify_ssl', False)),
+            timeout=int(settings.get('timeout', 10)),
         )
     except requests.RequestException:
         return False
@@ -244,32 +244,32 @@ def ensure_authenticated_session(
     cookies = current_cookie_payload(settings)
     if not cookies or not cookies_are_authenticated(settings, cookies):
         raise RuntimeError(
-            "IB Web session is not authenticated. Provide valid IB_WEB_COOKIE_SOURCE/IB_WEB_COOKIES."
+            'IB Web session is not authenticated. Provide valid IB_WEB_COOKIE_SOURCE/IB_WEB_COOKIES.'
         )
-    account_id = str(settings.get("account_id") or "")
+    account_id = str(settings.get('account_id') or '')
     if not account_id:
         accounts = fetch_accounts(
-            str(settings.get("base_url") or "https://localhost:5000"),
+            str(settings.get('base_url') or 'https://localhost:5000'),
             cookies,
-            verify_ssl=bool(settings.get("verify_ssl", False)),
-            timeout=int(settings.get("timeout", 10)),
+            verify_ssl=bool(settings.get('verify_ssl', False)),
+            timeout=int(settings.get('timeout', 10)),
         )
         account_id = pick_account_id(
-            accounts, str(settings.get("login_mode") or "paper")
+            accounts, str(settings.get('login_mode') or 'paper')
         )
     cookie_output = str(
-        settings.get("cookie_output")
-        or default_cookie_output(base_dir=settings.get("cookie_base_dir"))
+        settings.get('cookie_output')
+        or default_cookie_output(base_dir=settings.get('cookie_base_dir'))
     )
     save_cookies_to_file(cookies, cookie_output)
     return {
-        "cookies": cookies,
-        "cookie_output": cookie_output,
-        "cookie_output_relative": str(settings.get("cookie_output_relative") or ""),
-        "cookie_source": normalize_cookie_source(
-            f"file:{cookie_output}", base_dir=settings.get("cookie_base_dir")
+        'cookies': cookies,
+        'cookie_output': cookie_output,
+        'cookie_output_relative': str(settings.get('cookie_output_relative') or ''),
+        'cookie_source': normalize_cookie_source(
+            f'file:{cookie_output}', base_dir=settings.get('cookie_base_dir')
         ),
-        "account_id": account_id,
-        "status_code": 200,
-        "used_login": False,
+        'account_id': account_id,
+        'status_code': 200,
+        'used_login': False,
     }

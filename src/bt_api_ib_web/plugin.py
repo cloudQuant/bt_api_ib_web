@@ -18,20 +18,20 @@ from bt_api_ib_web.runtime.feed import IbWebRequestDataFuture, IbWebRequestDataS
 def register_plugin(
     registry: type[ExchangeRegistry], runtime_factory: type[GatewayRuntimeRegistrar]
 ) -> PluginInfo:
-    registry.register_feed("IB_WEB___STK", IbWebRequestDataStock)
-    registry.register_exchange_data("IB_WEB___STK", IbWebExchangeDataStock)
-    registry.register_balance_handler("IB_WEB___STK", _ib_web_balance_handler)
+    registry.register_feed('IB_WEB___STK', IbWebRequestDataStock)
+    registry.register_exchange_data('IB_WEB___STK', IbWebExchangeDataStock)
+    registry.register_balance_handler('IB_WEB___STK', _ib_web_balance_handler)
 
-    registry.register_feed("IB_WEB___FUT", IbWebRequestDataFuture)
-    registry.register_exchange_data("IB_WEB___FUT", IbWebExchangeDataFuture)
-    registry.register_balance_handler("IB_WEB___FUT", _ib_web_balance_handler)
+    registry.register_feed('IB_WEB___FUT', IbWebRequestDataFuture)
+    registry.register_exchange_data('IB_WEB___FUT', IbWebExchangeDataFuture)
+    registry.register_balance_handler('IB_WEB___FUT', _ib_web_balance_handler)
 
-    runtime_factory.register_adapter("IB_WEB", IbWebGatewayAdapter)
+    runtime_factory.register_adapter('IB_WEB', IbWebGatewayAdapter)
 
     return PluginInfo(
-        name="bt_api_ib_web",
+        name='bt_api_ib_web',
         version=__version__,
-        core_requires=">=0.15,<1.0",
-        supported_exchanges=("IB_WEB___STK", "IB_WEB___FUT"),
-        supported_asset_types=("STK", "FUT"),
+        core_requires='>=0.15,<1.0',
+        supported_exchanges=('IB_WEB___STK', 'IB_WEB___FUT'),
+        supported_asset_types=('STK', 'FUT'),
     )

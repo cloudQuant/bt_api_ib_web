@@ -10,21 +10,21 @@ from bt_api_base.logging_factory import get_logger
 
 
 class ConnectionState(Enum):
-    DISCONNECTED = "disconnected"
-    CONNECTING = "connecting"
-    CONNECTED = "connected"
-    AUTHENTICATED = "authenticated"
-    ERROR = "error"
+    DISCONNECTED = 'disconnected'
+    CONNECTING = 'connecting'
+    CONNECTED = 'connected'
+    AUTHENTICATED = 'authenticated'
+    ERROR = 'error'
 
 
 class BaseDataStream(ABC):
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
         self.data_queue = data_queue
-        self.stream_name = kwargs.get("stream_name", self.__class__.__name__)
+        self.stream_name = kwargs.get('stream_name', self.__class__.__name__)
         self._running = False
         self._state = ConnectionState.DISCONNECTED
         self._thread: threading.Thread | None = None
-        self.logger = get_logger("ib_web_stream")
+        self.logger = get_logger('ib_web_stream')
 
     @property
     def state(self) -> ConnectionState:
@@ -35,7 +35,7 @@ class BaseDataStream(ABC):
         old_state = self._state
         self._state = new_state
         self.logger.info(
-            f"{self.stream_name} state: {old_state.value} -> {new_state.value}"
+            f'{self.stream_name} state: {old_state.value} -> {new_state.value}'
         )
 
     @abstractmethod
@@ -77,6 +77,6 @@ class BaseDataStream(ABC):
             time.sleep(interval)
             elapsed += interval
         self.logger.warning(
-            f"{self.stream_name}: wait_connected timeout after {timeout}s"
+            f'{self.stream_name}: wait_connected timeout after {timeout}s'
         )
         return False

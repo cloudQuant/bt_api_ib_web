@@ -10,11 +10,11 @@ class IbBarData(_IbContainerBase):
         self,
         bar_info: Any,
         symbol_name: Any = None,
-        asset_type: Any = "STK",
+        asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
         super().__init__(
-            "bar_info",
+            'bar_info',
             bar_info,
             symbol_name=symbol_name,
             asset_type=asset_type,
@@ -34,19 +34,19 @@ class IbBarData(_IbContainerBase):
         if self._initialized:
             return self
         info = self.bar_info if isinstance(self.bar_info, dict) else {}
-        self.date_val = info.get("date", "")
-        self.open_val = _to_float(info.get("open"))
-        self.high_val = _to_float(info.get("high"))
-        self.low_val = _to_float(info.get("low"))
-        self.close_val = _to_float(info.get("close"))
-        self.volume_val = _to_int(info.get("volume"))
-        self.wap_val = _to_float(info.get("wap"))
-        self.bar_count = _to_int(info.get("barCount"))
+        self.date_val = info.get('date', '')
+        self.open_val = _to_float(info.get('open'))
+        self.high_val = _to_float(info.get('high'))
+        self.low_val = _to_float(info.get('low'))
+        self.close_val = _to_float(info.get('close'))
+        self.volume_val = _to_int(info.get('volume'))
+        self.wap_val = _to_float(info.get('wap'))
+        self.bar_count = _to_int(info.get('barCount'))
         self._initialized = True
         return self
 
     def get_symbol_name(self) -> str:
-        return str(self.symbol_name or "")
+        return str(self.symbol_name or '')
 
     def get_asset_type(self) -> str:
         return str(self.asset_type)
@@ -89,14 +89,14 @@ class IbBarData(_IbContainerBase):
 
     def get_all_data(self) -> dict[str, Any]:
         return {
-            "exchange_name": self.exchange_name,
-            "symbol_name": self.symbol_name,
-            "date": self.date_val,
-            "open": self.open_val,
-            "high": self.high_val,
-            "low": self.low_val,
-            "close": self.close_val,
-            "volume": self.volume_val,
-            "wap": self.wap_val,
-            "bar_count": self.bar_count,
+            'exchange_name': self.exchange_name,
+            'symbol_name': self.symbol_name,
+            'date': self.date_val,
+            'open': self.open_val,
+            'high': self.high_val,
+            'low': self.low_val,
+            'close': self.close_val,
+            'volume': self.volume_val,
+            'wap': self.wap_val,
+            'bar_count': self.bar_count,
         }

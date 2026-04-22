@@ -6,9 +6,9 @@ from bt_api_ib_web.runtime.feed import (
 from bt_api_ib_web.runtime.stream import IbWebAccountStream, IbWebDataStream
 
 __all__ = [
-    "IbWebAccountStream",
-    "IbWebDataStream",
-    "IbWebRequestData",
-    "IbWebRequestDataFuture",
-    "IbWebRequestDataStock",
+    'IbWebAccountStream',
+    'IbWebDataStream',
+    'IbWebRequestData',
+    'IbWebRequestDataFuture',
+    'IbWebRequestDataStock',
 ]

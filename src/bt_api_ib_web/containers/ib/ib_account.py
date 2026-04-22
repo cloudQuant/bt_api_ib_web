@@ -10,11 +10,11 @@ class IbAccountData(_IbContainerBase):
         self,
         account_info: Any,
         symbol_name: Any = None,
-        asset_type: Any = "STK",
+        asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
         super().__init__(
-            "account_info",
+            'account_info',
             account_info,
             symbol_name=symbol_name,
             asset_type=asset_type,
@@ -36,16 +36,16 @@ class IbAccountData(_IbContainerBase):
         if self._initialized:
             return self
         info = self.account_info if isinstance(self.account_info, dict) else {}
-        self.account_id = info.get("AccountID", info.get("account", ""))
-        self.net_liquidation = _to_float(info.get("NetLiquidation"))
-        self.total_cash_value = _to_float(info.get("TotalCashValue"))
-        self.buying_power = _to_float(info.get("BuyingPower"))
-        self.gross_position_value = _to_float(info.get("GrossPositionValue"))
-        self.maintenance_margin = _to_float(info.get("MaintMarginReq"))
-        self.available_funds = _to_float(info.get("AvailableFunds"))
-        self.unrealized_pnl = _to_float(info.get("UnrealizedPnL"))
-        self.realized_pnl = _to_float(info.get("RealizedPnL"))
-        self.currency = str(info.get("Currency", "USD"))
+        self.account_id = info.get('AccountID', info.get('account', ''))
+        self.net_liquidation = _to_float(info.get('NetLiquidation'))
+        self.total_cash_value = _to_float(info.get('TotalCashValue'))
+        self.buying_power = _to_float(info.get('BuyingPower'))
+        self.gross_position_value = _to_float(info.get('GrossPositionValue'))
+        self.maintenance_margin = _to_float(info.get('MaintMarginReq'))
+        self.available_funds = _to_float(info.get('AvailableFunds'))
+        self.unrealized_pnl = _to_float(info.get('UnrealizedPnL'))
+        self.realized_pnl = _to_float(info.get('RealizedPnL'))
+        self.currency = str(info.get('Currency', 'USD'))
         self._initialized = True
         return self
 
@@ -53,7 +53,7 @@ class IbAccountData(_IbContainerBase):
         return str(self.asset_type)
 
     def get_account_type(self) -> str:
-        return str(self.currency or "USD")
+        return str(self.currency or 'USD')
 
     def get_server_time(self) -> float:
         return 0.0
@@ -78,13 +78,13 @@ class IbAccountData(_IbContainerBase):
 
     def get_all_data(self) -> dict[str, Any]:
         return {
-            "exchange_name": self.exchange_name,
-            "account_id": self.account_id,
-            "net_liquidation": self.net_liquidation,
-            "total_cash_value": self.total_cash_value,
-            "buying_power": self.buying_power,
-            "available_funds": self.available_funds,
-            "unrealized_pnl": self.unrealized_pnl,
-            "realized_pnl": self.realized_pnl,
-            "currency": self.currency,
+            'exchange_name': self.exchange_name,
+            'account_id': self.account_id,
+            'net_liquidation': self.net_liquidation,
+            'total_cash_value': self.total_cash_value,
+            'buying_power': self.buying_power,
+            'available_funds': self.available_funds,
+            'unrealized_pnl': self.unrealized_pnl,
+            'realized_pnl': self.realized_pnl,
+            'currency': self.currency,
         }
