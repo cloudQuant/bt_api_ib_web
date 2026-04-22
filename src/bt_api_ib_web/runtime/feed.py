@@ -13,7 +13,10 @@ from bt_api_base.logging_factory import get_logger
 
 from bt_api_ib_web.exchange_data import IbWebExchangeDataFuture, IbWebExchangeDataStock
 from bt_api_ib_web.runtime.browser_cookies import get_ibkr_cookies
-from bt_api_ib_web.runtime.session import ensure_authenticated_session, load_ib_web_settings
+from bt_api_ib_web.runtime.session import (
+    ensure_authenticated_session,
+    load_ib_web_settings,
+)
 
 
 class IbWebRequestData(Feed):

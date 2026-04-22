@@ -25,3 +25,15 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 bt_api_ib_web = ["configs/*.yaml"]
+
+[tool.ruff]
+src = ["src"]
+fix = true
+show-fixes = false
+
+[tool.ruff.lint]
+extend-select = ["B", "E", "F", "I", "Q", "RUF", "UP", "W"]
+ignore = ["E501", "RUF012"]
+
+[tool.ruff.format]
+quote-style = "single"

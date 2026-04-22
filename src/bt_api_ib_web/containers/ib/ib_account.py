@@ -32,7 +32,7 @@ class IbAccountData(_IbContainerBase):
         self.realized_pnl: float | None = None
         self.currency: str | None = None
 
-    def init_data(self) -> "IbAccountData":
+    def init_data(self) -> IbAccountData:
         if self._initialized:
             return self
         info = self.account_info if isinstance(self.account_info, dict) else {}
@@ -70,7 +70,7 @@ class IbAccountData(_IbContainerBase):
     def get_unrealized_profit(self) -> float:
         return self.unrealized_pnl or 0.0
 
-    def get_balances(self) -> list["IbAccountData"]:
+    def get_balances(self) -> list[IbAccountData]:
         return [self]
 
     def get_positions(self) -> list[Any]:

@@ -30,7 +30,7 @@ class IbBarData(_IbContainerBase):
         self.wap_val = 0.0
         self.bar_count = 0
 
-    def init_data(self) -> "IbBarData":
+    def init_data(self) -> IbBarData:
         if self._initialized:
             return self
         info = self.bar_info if isinstance(self.bar_info, dict) else {}

@@ -36,7 +36,7 @@ class IbContract:
         return f"IbContract({self})"
 
     @classmethod
-    def stock(cls, symbol: Any, exchange: Any = "SMART", currency: Any = "USD") -> "IbContract":
+    def stock(cls, symbol: Any, exchange: Any = "SMART", currency: Any = "USD") -> IbContract:
         return cls(symbol=symbol, sec_type="STK", exchange=exchange, currency=currency)
 
     @classmethod
@@ -46,7 +46,7 @@ class IbContract:
         exchange: Any = "GLOBEX",
         currency: Any = "USD",
         last_trade_date: Any = "",
-    ) -> "IbContract":
+    ) -> IbContract:
         return cls(
             symbol=symbol,
             sec_type="FUT",
@@ -64,7 +64,7 @@ class IbContract:
         right: Any,
         exchange: Any = "SMART",
         currency: Any = "USD",
-    ) -> "IbContract":
+    ) -> IbContract:
         return cls(
             symbol=symbol,
             sec_type="OPT",
@@ -76,5 +76,5 @@ class IbContract:
         )
 
     @classmethod
-    def forex(cls, symbol: Any, exchange: Any = "IDEALPRO", currency: Any = "USD") -> "IbContract":
+    def forex(cls, symbol: Any, exchange: Any = "IDEALPRO", currency: Any = "USD") -> IbContract:
         return cls(symbol=symbol, sec_type="CASH", exchange=exchange, currency=currency)

@@ -51,7 +51,7 @@ class IbOrderData(_IbContainerBase):
         self.avg_fill_price = 0.0
         self.last_fill_time: str | None = None
 
-    def init_data(self) -> "IbOrderData":
+    def init_data(self) -> IbOrderData:
         if self._initialized:
             return self
         info = self.order_info if isinstance(self.order_info, dict) else {}

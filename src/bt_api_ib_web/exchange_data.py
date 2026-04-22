@@ -14,13 +14,13 @@ except ImportError:
 
 __all__ = [
     "IbWebExchangeData",
-    "IbWebExchangeDataStock",
+    "IbWebExchangeDataForex",
     "IbWebExchangeDataFuture",
     "IbWebExchangeDataOption",
-    "IbWebExchangeDataForex",
-    "_get_ib_yaml_path",
-    "_get_ib_raw_config",
+    "IbWebExchangeDataStock",
     "_get_ib_config",
+    "_get_ib_raw_config",
+    "_get_ib_yaml_path",
 ]
 
 

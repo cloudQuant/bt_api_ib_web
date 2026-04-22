@@ -33,7 +33,7 @@ class IbTradeData(_IbContainerBase):
         self.commission_val: float | None = None
         self.exchange_val: str | None = None
 
-    def init_data(self) -> "IbTradeData":
+    def init_data(self) -> IbTradeData:
         if self._initialized:
             return self
         info = self.trade_info if isinstance(self.trade_info, dict) else {}

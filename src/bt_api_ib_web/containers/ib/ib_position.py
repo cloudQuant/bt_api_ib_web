@@ -32,7 +32,7 @@ class IbPositionData(_IbContainerBase):
         self.realized_pnl_val: float | None = None
         self.currency: str | None = None
 
-    def init_data(self) -> "IbPositionData":
+    def init_data(self) -> IbPositionData:
         if self._initialized:
             return self
         info = self.position_info if isinstance(self.position_info, dict) else {}

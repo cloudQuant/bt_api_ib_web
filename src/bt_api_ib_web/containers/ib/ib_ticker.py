@@ -34,7 +34,7 @@ class IbTickerData(_IbContainerBase):
         self.close_val: float | None = None
         self.timestamp_val: float | str | None = None
 
-    def init_data(self) -> "IbTickerData":
+    def init_data(self) -> IbTickerData:
         if self._initialized:
             return self
         info = self.ticker_info if isinstance(self.ticker_info, dict) else {}
