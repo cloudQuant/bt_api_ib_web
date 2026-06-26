@@ -26,6 +26,7 @@ class TestIbAccountData:
             "TotalCashValue": 50000.0,
             "BuyingPower": 200000.0,
             "GrossPositionValue": 50000.0,
+            "InitMarginReq": 15000.0,
             "MaintMarginReq": 25000.0,
             "AvailableFunds": 75000.0,
             "UnrealizedPnL": 5000.0,
@@ -40,6 +41,7 @@ class TestIbAccountData:
         assert account.total_cash_value == 50000.0
         assert account.buying_power == 200000.0
         assert account.gross_position_value == 50000.0
+        assert account.initial_margin == 15000.0
         assert account.maintenance_margin == 25000.0
         assert account.available_funds == 75000.0
         assert account.unrealized_pnl == 5000.0
@@ -110,12 +112,29 @@ class TestIbAccountData:
         assert account.get_total_wallet_balance() == 100000.0
 
     def test_get_margin(self):
-        """Test get_margin returns net_liquidation."""
-        data = {"NetLiquidation": 100000.0}
+        """Test get_margin returns equity before unrealized PnL."""
+        data = {"NetLiquidation": 100000.0, "UnrealizedPnL": 5000.0}
         account = IbAccountData(data)
         account.init_data()
 
-        assert account.get_margin() == 100000.0
+        assert account.get_margin() == 95000.0
+        assert account.get_margin() + account.get_unrealized_profit() == 100000.0
+
+    def test_init_data_accepts_summary_amount_wrappers(self):
+        """Test init_data accepts IB summary fields wrapped with amounts."""
+        data = {
+            "NetLiquidation": {"amount": "100000.0", "currency": "USD"},
+            "AvailableFunds": {"amount": "0", "currency": "USD"},
+            "CashBalance": {"amount": "50000.0", "currency": "USD"},
+            "UnrealizedPnL": {"amount": "-125.5", "currency": "USD"},
+        }
+        account = IbAccountData(data)
+        account.init_data()
+
+        assert account.net_liquidation == 100000.0
+        assert account.available_funds == 0.0
+        assert account.total_cash_value == 50000.0
+        assert account.unrealized_pnl == -125.5
 
     def test_get_available_margin(self):
         """Test get_available_margin."""

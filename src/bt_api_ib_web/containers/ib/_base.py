@@ -4,7 +4,15 @@ from typing import Any
 
 
 def _to_float(value: Any) -> float:
-    return float(value or 0)
+    if isinstance(value, dict):
+        for key in ('amount', 'value'):
+            if key in value:
+                return _to_float(value[key])
+        return 0.0
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _to_int(value: Any) -> int:

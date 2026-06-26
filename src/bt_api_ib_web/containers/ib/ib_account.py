@@ -26,6 +26,7 @@ class IbAccountData(_IbContainerBase):
         self.total_cash_value: float | None = None
         self.buying_power: float | None = None
         self.gross_position_value: float | None = None
+        self.initial_margin: float | None = None
         self.maintenance_margin: float | None = None
         self.available_funds: float | None = None
         self.unrealized_pnl: float | None = None
@@ -37,14 +38,44 @@ class IbAccountData(_IbContainerBase):
             return self
         info = self.account_info if isinstance(self.account_info, dict) else {}
         self.account_id = info.get('AccountID', info.get('account', ''))
-        self.net_liquidation = _to_float(info.get('NetLiquidation'))
-        self.total_cash_value = _to_float(info.get('TotalCashValue'))
-        self.buying_power = _to_float(info.get('BuyingPower'))
-        self.gross_position_value = _to_float(info.get('GrossPositionValue'))
-        self.maintenance_margin = _to_float(info.get('MaintMarginReq'))
-        self.available_funds = _to_float(info.get('AvailableFunds'))
-        self.unrealized_pnl = _to_float(info.get('UnrealizedPnL'))
-        self.realized_pnl = _to_float(info.get('RealizedPnL'))
+        self.net_liquidation = _to_float(
+            _first_value(
+                info, 'NetLiquidation', 'net_liquidation', 'netliquidation', 'value'
+            )
+        )
+        self.total_cash_value = _to_float(
+            _first_value(
+                info,
+                'TotalCashValue',
+                'total_cash_value',
+                'CashBalance',
+                'cashbalance',
+                'balance',
+            )
+        )
+        self.buying_power = _to_float(
+            _first_value(info, 'BuyingPower', 'buying_power', 'buyingpower')
+        )
+        self.gross_position_value = _to_float(
+            _first_value(info, 'GrossPositionValue', 'gross_position_value')
+        )
+        self.initial_margin = _to_float(
+            _first_value(info, 'InitMarginReq', 'initial_margin', 'init_margin')
+        )
+        self.maintenance_margin = _to_float(
+            _first_value(info, 'MaintMarginReq', 'maintenance_margin', 'maint_margin')
+        )
+        self.available_funds = _to_float(
+            _first_value(
+                info, 'AvailableFunds', 'available_funds', 'availablefunds', 'cash'
+            )
+        )
+        self.unrealized_pnl = _to_float(
+            _first_value(info, 'UnrealizedPnL', 'unrealized_pnl', 'unrealizedpnl')
+        )
+        self.realized_pnl = _to_float(
+            _first_value(info, 'RealizedPnL', 'realized_pnl', 'realizedpnl')
+        )
         self.currency = str(info.get('Currency', 'USD'))
         self._initialized = True
         return self
@@ -62,7 +93,7 @@ class IbAccountData(_IbContainerBase):
         return self.net_liquidation or 0.0
 
     def get_margin(self) -> float:
-        return self.net_liquidation or 0.0
+        return (self.net_liquidation or 0.0) - (self.unrealized_pnl or 0.0)
 
     def get_available_margin(self) -> float:
         return self.available_funds or 0.0
@@ -84,7 +115,17 @@ class IbAccountData(_IbContainerBase):
             'total_cash_value': self.total_cash_value,
             'buying_power': self.buying_power,
             'available_funds': self.available_funds,
+            'initial_margin': self.initial_margin,
+            'maintenance_margin': self.maintenance_margin,
+            'gross_position_value': self.gross_position_value,
             'unrealized_pnl': self.unrealized_pnl,
             'realized_pnl': self.realized_pnl,
             'currency': self.currency,
         }
+
+
+def _first_value(payload: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        if key in payload:
+            return payload[key]
+    return None
