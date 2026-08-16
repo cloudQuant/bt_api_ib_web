@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -18,6 +19,7 @@ from bt_api_ib_web.runtime.feed import IbWebRequestDataFuture, IbWebRequestDataS
 def register_plugin(
     registry: type[ExchangeRegistry], runtime_factory: type[GatewayRuntimeRegistrar]
 ) -> PluginInfo:
+    """register_plugin function"""
     registry.register_feed('IB_WEB___STK', IbWebRequestDataStock)
     registry.register_exchange_data('IB_WEB___STK', IbWebExchangeDataStock)
     registry.register_balance_handler('IB_WEB___STK', _ib_web_balance_handler)

@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +7,7 @@ from bt_api_ib_web.containers.ib._base import _IbContainerBase, _to_float
 
 
 class IbAccountData(_IbContainerBase):
+    """Class IbAccountData"""
     def __init__(
         self,
         account_info: Any,
@@ -13,6 +15,7 @@ class IbAccountData(_IbContainerBase):
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(
             'account_info',
             account_info,
@@ -33,6 +36,7 @@ class IbAccountData(_IbContainerBase):
         self.currency: str | None = None
 
     def init_data(self) -> IbAccountData:
+        """init_data method"""
         if self._initialized:
             return self
         info = self.account_info if isinstance(self.account_info, dict) else {}
@@ -50,33 +54,43 @@ class IbAccountData(_IbContainerBase):
         return self
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.asset_type)
 
     def get_account_type(self) -> str:
+        """get_account_type method"""
         return str(self.currency or 'USD')
 
     def get_server_time(self) -> float:
+        """get_server_time method"""
         return 0.0
 
     def get_total_wallet_balance(self) -> float:
+        """get_total_wallet_balance method"""
         return self.net_liquidation or 0.0
 
     def get_margin(self) -> float:
+        """get_margin method"""
         return self.net_liquidation or 0.0
 
     def get_available_margin(self) -> float:
+        """get_available_margin method"""
         return self.available_funds or 0.0
 
     def get_unrealized_profit(self) -> float:
+        """get_unrealized_profit method"""
         return self.unrealized_pnl or 0.0
 
     def get_balances(self) -> list[IbAccountData]:
+        """get_balances method"""
         return [self]
 
     def get_positions(self) -> list[Any]:
+        """get_positions method"""
         return []
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         return {
             'exchange_name': self.exchange_name,
             'account_id': self.account_id,

@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +7,7 @@ from bt_api_ib_web.containers.ib._base import _IbContainerBase, _to_float, _to_i
 
 
 class IbBarData(_IbContainerBase):
+    """Class IbBarData"""
     def __init__(
         self,
         bar_info: Any,
@@ -13,6 +15,7 @@ class IbBarData(_IbContainerBase):
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(
             'bar_info',
             bar_info,
@@ -31,6 +34,7 @@ class IbBarData(_IbContainerBase):
         self.bar_count = 0
 
     def init_data(self) -> IbBarData:
+        """init_data method"""
         if self._initialized:
             return self
         info = self.bar_info if isinstance(self.bar_info, dict) else {}
@@ -46,48 +50,63 @@ class IbBarData(_IbContainerBase):
         return self
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.symbol_name or '')
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.asset_type)
 
     def get_server_time(self) -> str | None:
+        """get_server_time method"""
         return self.date_val
 
     def get_open_time(self) -> str | None:
+        """get_open_time method"""
         return self.date_val
 
     def get_open_price(self) -> float:
+        """get_open_price method"""
         return self.open_val
 
     def get_high_price(self) -> float:
+        """get_high_price method"""
         return self.high_val
 
     def get_low_price(self) -> float:
+        """get_low_price method"""
         return self.low_val
 
     def get_close_price(self) -> float:
+        """get_close_price method"""
         return self.close_val
 
     def get_volume(self) -> int:
+        """get_volume method"""
         return self.volume_val
 
     def get_amount(self) -> None:
+        """get_amount method"""
         return None
 
     def get_close_time(self) -> str | None:
+        """get_close_time method"""
         return self.date_val
 
     def get_bar_status(self) -> bool:
+        """get_bar_status method"""
         return True
 
     def get_num_trades(self) -> int:
+        """get_num_trades method"""
         return self.bar_count
 
     def get_wap(self) -> float:
+        """get_wap method"""
         return self.wap_val
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         return {
             'exchange_name': self.exchange_name,
             'symbol_name': self.symbol_name,

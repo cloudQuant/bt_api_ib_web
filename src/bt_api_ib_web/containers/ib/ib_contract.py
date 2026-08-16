@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -6,6 +7,7 @@ from typing import Any
 
 @dataclass
 class IbContract:
+    """Class IbContract"""
     symbol: Any = ''
     sec_type: Any = 'STK'
     exchange: Any = 'SMART'
@@ -20,6 +22,7 @@ class IbContract:
     trading_class: Any = ''
 
     def to_dict(self) -> dict[str, Any]:
+        """to_dict method"""
         return {key: value for key, value in self.__dict__.items() if value}
 
     def __str__(self) -> str:
@@ -39,6 +42,7 @@ class IbContract:
     def stock(
         cls, symbol: Any, exchange: Any = 'SMART', currency: Any = 'USD'
     ) -> IbContract:
+        """stock method"""
         return cls(symbol=symbol, sec_type='STK', exchange=exchange, currency=currency)
 
     @classmethod
@@ -49,6 +53,7 @@ class IbContract:
         currency: Any = 'USD',
         last_trade_date: Any = '',
     ) -> IbContract:
+        """future method"""
         return cls(
             symbol=symbol,
             sec_type='FUT',
@@ -67,6 +72,7 @@ class IbContract:
         exchange: Any = 'SMART',
         currency: Any = 'USD',
     ) -> IbContract:
+        """option method"""
         return cls(
             symbol=symbol,
             sec_type='OPT',
@@ -81,4 +87,5 @@ class IbContract:
     def forex(
         cls, symbol: Any, exchange: Any = 'IDEALPRO', currency: Any = 'USD'
     ) -> IbContract:
+        """forex method"""
         return cls(symbol=symbol, sec_type='CASH', exchange=exchange, currency=currency)

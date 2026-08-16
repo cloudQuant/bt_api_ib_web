@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 import os
@@ -14,12 +15,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def project_root() -> Path:
+    """project_root function"""
     return Path(__file__).resolve().parents[3]
 
 
 def resolve_local_path(
     path_value: str | Path, base_dir: str | Path | None = None
 ) -> Path:
+    """resolve_local_path function"""
     raw_path = Path(path_value).expanduser()
     if raw_path.is_absolute():
         return raw_path
@@ -28,12 +31,12 @@ def resolve_local_path(
 
 
 def to_relative_path(path_value: str | Path, base_dir: str | Path | None = None) -> str:
+    """to_relative_path function"""
     target = resolve_local_path(path_value, base_dir=base_dir)
     root = (
         Path(base_dir).expanduser().resolve() if base_dir else project_root().resolve()
     )
-    try:
-        return target.relative_to(root).as_posix()
+    try: return target.relative_to(root).as_posix()
     except ValueError:
         return os.path.relpath(target, root).replace('\\', '/')
 
@@ -41,6 +44,7 @@ def to_relative_path(path_value: str | Path, base_dir: str | Path | None = None)
 def normalize_cookie_source(
     cookie_source: str | None, base_dir: str | Path | None = None
 ) -> str:
+    """normalize_cookie_source function"""
     value = str(cookie_source or '').strip()
     if not value or value in {'browser', 'env'} or (';' in value and '=' in value):
         return value
@@ -49,6 +53,7 @@ def normalize_cookie_source(
 
 
 def default_cookie_output(base_dir: str | Path | None = None) -> Path:
+    """default_cookie_output function"""
     return resolve_local_path(Path('configs') / 'ibkr_cookies.json', base_dir=base_dir)
 
 
@@ -57,6 +62,7 @@ def load_ib_web_settings(
     base_dir: str | Path | None = None,
     env_file: str | Path | None = None,
 ) -> dict[str, Any]:
+    """load_ib_web_settings function"""
     env_path = (
         resolve_local_path(env_file, base_dir=base_dir)
         if env_file
@@ -84,8 +90,7 @@ def load_ib_web_settings(
         return str(value).strip().lower() in {'1', 'true', 'yes', 'on'}
 
     def pick_int(name: str, default: int) -> int:
-        try:
-            return int(pick(name, default))
+        try: return int(pick(name, default))
         except (TypeError, ValueError):
             return default
 
@@ -145,6 +150,7 @@ def load_ib_web_settings(
 
 
 def api_base_url(base_url: str) -> str:
+    """api_base_url function"""
     value = str(base_url or '').rstrip('/')
     if value.endswith('/v1/api'):
         return value
@@ -154,6 +160,7 @@ def api_base_url(base_url: str) -> str:
 def auth_status(
     base_url: str, cookies: dict[str, str], verify_ssl: bool = False, timeout: int = 10
 ) -> requests.Response:
+    """auth_status function"""
     return requests.post(
         f'{api_base_url(base_url)}/iserver/auth/status',
         cookies=cookies,
@@ -163,6 +170,7 @@ def auth_status(
 
 
 def auth_response_is_authenticated(response: requests.Response) -> bool:
+    """auth_response_is_authenticated function"""
     if response.status_code != 200:
         return False
     try:
@@ -177,6 +185,7 @@ def auth_response_is_authenticated(response: requests.Response) -> bool:
 def fetch_accounts(
     base_url: str, cookies: dict[str, str], verify_ssl: bool = False, timeout: int = 10
 ) -> list[dict[str, Any]]:
+    """fetch_accounts function"""
     response = requests.get(
         f'{api_base_url(base_url)}/portfolio/accounts',
         cookies=cookies,
@@ -190,6 +199,7 @@ def fetch_accounts(
 
 
 def pick_account_id(accounts: list[dict[str, Any]], login_mode: str) -> str:
+    """pick_account_id function"""
     if login_mode == 'paper':
         for account in accounts:
             for key in ('accountId', 'id', 'accountIdKey'):
@@ -205,6 +215,7 @@ def pick_account_id(accounts: list[dict[str, Any]], login_mode: str) -> str:
 
 
 def current_cookie_payload(settings: dict[str, Any]) -> dict[str, str]:
+    """current_cookie_payload function"""
     source = str(settings.get('cookie_source') or '')
     if not source:
         return {}
@@ -219,10 +230,11 @@ def current_cookie_payload(settings: dict[str, Any]) -> dict[str, str]:
 def cookies_are_authenticated(
     settings: dict[str, Any], cookies: dict[str, str]
 ) -> bool:
+    """cookies_are_authenticated function"""
     if not cookies:
         return False
     try:
-        response = auth_status(
+            response = auth_status(
             str(settings.get('base_url') or 'https://localhost:5000'),
             cookies,
             verify_ssl=bool(settings.get('verify_ssl', False)),
@@ -238,6 +250,7 @@ def ensure_authenticated_session(
     base_dir: str | Path | None = None,
     env_file: str | Path | None = None,
 ) -> dict[str, Any]:
+    """ensure_authenticated_session function"""
     settings = load_ib_web_settings(
         overrides=overrides, base_dir=base_dir, env_file=env_file
     )

@@ -1,3 +1,4 @@
+"""Module documentation"""
 from __future__ import annotations
 
 import contextlib
@@ -22,7 +23,9 @@ def _normalize_ws_message(message: Any) -> str:
 
 
 class IbWebDataStream(BaseDataStream):
+    """Class IbWebDataStream"""
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
+        """__init__ method"""
         super().__init__(data_queue, **kwargs)
         self.base_url = kwargs.get('base_url', 'https://localhost:5000')
         self.verify_ssl = kwargs.get('verify_ssl', False)
@@ -40,6 +43,7 @@ class IbWebDataStream(BaseDataStream):
         return f'{base}/ws' if '/v1/api' in base else f'{base}/v1/api/ws'
 
     def connect(self) -> None:
+        """connect method"""
         try:
             import websocket
         except ImportError:
@@ -74,6 +78,7 @@ class IbWebDataStream(BaseDataStream):
         self._ws_thread.start()
 
     def disconnect(self) -> None:
+        """disconnect method"""
         self._running = False
         if self._ws:
             with contextlib.suppress(Exception):
@@ -81,6 +86,7 @@ class IbWebDataStream(BaseDataStream):
         self.state = ConnectionState.DISCONNECTED
 
     def subscribe_topics(self, topics: list[dict[str, Any]]) -> None:
+        """subscribe_topics method"""
         for topic in topics:
             if topic.get('topic') == 'market_data' and topic.get('conid'):
                 self._subscribe_market_data(
@@ -168,7 +174,9 @@ class IbWebDataStream(BaseDataStream):
 
 
 class IbWebAccountStream(BaseDataStream):
+    """Class IbWebAccountStream"""
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
+        """__init__ method"""
         super().__init__(data_queue, **kwargs)
         self.base_url = kwargs.get('base_url', 'https://localhost:5000')
         self.verify_ssl = kwargs.get('verify_ssl', False)
@@ -185,6 +193,7 @@ class IbWebAccountStream(BaseDataStream):
         return f'{base}/ws' if '/v1/api' in base else f'{base}/v1/api/ws'
 
     def connect(self) -> None:
+        """connect method"""
         try:
             import websocket
         except ImportError:
@@ -219,6 +228,7 @@ class IbWebAccountStream(BaseDataStream):
         self._ws_thread.start()
 
     def disconnect(self) -> None:
+        """disconnect method"""
         self._running = False
         if self._ws:
             with contextlib.suppress(Exception):
@@ -226,6 +236,7 @@ class IbWebAccountStream(BaseDataStream):
         self.state = ConnectionState.DISCONNECTED
 
     def subscribe_topics(self, topics: list[dict[str, Any]]) -> None:
+        """subscribe_topics method"""
         for topic in topics:
             topic_type = topic.get('topic', '')
             if topic_type == 'account':

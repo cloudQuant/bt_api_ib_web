@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from functools import lru_cache
@@ -43,11 +44,13 @@ def _get_ib_config() -> ExchangeConfig:
 
 
 class IbWebExchangeData(ExchangeData):
+    """Class IbWebExchangeData"""
     PROD_REST_URL = 'https://api.interactivebrokers.com'
     TEST_REST_URL = 'https://api.test.interactivebrokers.com'
     GATEWAY_REST_URL = 'https://localhost:5000'
 
     def __init__(self, asset_type: str = 'stk') -> None:
+        """__init__ method"""
         super().__init__()
         config = _get_ib_config()
         raw = _get_ib_raw_config()
@@ -100,45 +103,59 @@ class IbWebExchangeData(ExchangeData):
         }
 
     def get_period(self, period: str) -> str:
+        """get_period method"""
         return self.kline_periods.get(period, period)
 
     def get_symbol(self, symbol: str) -> str:
+        """get_symbol method"""
         return str(symbol)
 
     def get_snapshot_fields_str(self, fields: list[str] | None = None) -> str:
+        """get_snapshot_fields_str method"""
         values = [str(item) for item in (fields or self.default_snapshot_fields)]
         return ','.join(values)
 
     def get_rest_path(self, key: str) -> str:
+        """get_rest_path method"""
         path = self.rest_paths.get(key)
         if not path:
             self.raise_path_error(self.exchange_name or 'IB_WEB', key)
         return str(path)
 
     def get_rest_url(self, key: str, **params: Any) -> tuple[str, str]:
+        """get_rest_url method"""
         template = self.get_rest_path(key)
         method, raw_path = template.split(' ', 1)
         return method, f'{self.rest_url}{raw_path.format(**params)}'
 
     def get_wss_path(self) -> str:
+        """get_wss_path method"""
         return self.wss_url
 
 
 class IbWebExchangeDataStock(IbWebExchangeData):
+    """Class IbWebExchangeDataStock"""
     def __init__(self) -> None:
+        """__init__ method"""
         super().__init__('stk')
 
 
 class IbWebExchangeDataFuture(IbWebExchangeData):
+    """Class IbWebExchangeDataFuture"""
     def __init__(self) -> None:
+        """__init__ method"""
         super().__init__('fut')
 
 
 class IbWebExchangeDataOption(IbWebExchangeData):
+    """Class IbWebExchangeDataOption"""
     def __init__(self) -> None:
+        """__init__ method"""
         super().__init__('opt')
 
 
 class IbWebExchangeDataForex(IbWebExchangeData):
+    """Class IbWebExchangeDataForex"""
     def __init__(self) -> None:
+        """__init__ method"""
         super().__init__('cash')

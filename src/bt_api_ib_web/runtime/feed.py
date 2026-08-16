@@ -1,3 +1,4 @@
+"""Module documentation"""
 from __future__ import annotations
 
 import threading
@@ -20,7 +21,9 @@ from bt_api_ib_web.runtime.session import (
 
 
 class IbWebRequestData(Feed):
+    """Class IbWebRequestData"""
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
+        """__init__ method"""
         super().__init__(data_queue)
         self.data_queue = data_queue
         auth_settings = load_ib_web_settings(
@@ -160,8 +163,7 @@ class IbWebRequestData(Feed):
             request_cookies = {**self._loaded_cookies, **request_cookies}
         attempted_fallback = False
         while True:
-            try:
-                return self._http.request(
+            try: return self._http.request(
                     method=method,
                     url=f'{self.base_url}{endpoint}',
                     headers=headers,
@@ -195,7 +197,7 @@ class IbWebRequestData(Feed):
             self._loaded_cookies = {}
             return
         try:
-            self._loaded_cookies = get_ibkr_cookies(
+                self._loaded_cookies = get_ibkr_cookies(
                 base_url=self.base_url,
                 cookie_source=self._cookie_source,
                 browser=self._cookie_browser,
@@ -207,18 +209,22 @@ class IbWebRequestData(Feed):
             self.request_logger.warning('IB Web cookie load failed: %s', exc)
 
     def has_cookies(self) -> bool:
+        """has_cookies method"""
         return bool(self._loaded_cookies)
 
     def get_last_connect_error(self) -> Exception | None:
+        """get_last_connect_error method"""
         return self._last_connect_error or self._cookie_load_error
 
     def _can_initialize_session(self) -> bool:
         return bool(self._allow_browser_login and self._username and self._password)
 
     def check_auth_status(self) -> Any:
+        """check_auth_status method"""
         return self._post('/iserver/auth/status')
 
     def reauthenticate(self) -> Any:
+        """reauthenticate method"""
         return self._post('/iserver/reauthenticate')
 
     def _update_auth_state(self) -> bool:
@@ -259,6 +265,7 @@ class IbWebRequestData(Feed):
         return session
 
     def connect(self) -> None:
+        """connect method"""
         self._last_connect_error = None
         self._load_cookies()
         last_error: Exception | None = None
@@ -292,10 +299,12 @@ class IbWebRequestData(Feed):
             )
 
     def disconnect(self) -> None:
+        """disconnect method"""
         self._authenticated = False
         self._http.close()
 
     def is_connected(self) -> bool:
+        """is_connected method"""
         return self._authenticated
 
     def _ensure_session(self) -> None:
@@ -314,16 +323,19 @@ class IbWebRequestData(Feed):
             self._last_session_check = now
 
     def search_stocks(self, symbols: str, extra_data: Any = None, **kwargs: Any) -> Any:
+        """search_stocks method"""
         return self._get('/trsrv/stocks', params={'symbols': symbols})
 
     def search_contract(
         self, symbol: str, sec_type: str = 'STK', extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """search_contract method"""
         return self._get(
             '/iserver/secdef/search', params={'symbol': symbol, 'secType': sec_type}
         )
 
     def resolve_conid(self, symbol: str, sec_type: str = 'STK') -> Any:
+        """resolve_conid method"""
         if sec_type == 'STK':
             response = self.search_stocks(symbol)
             if symbol in response:
@@ -339,6 +351,7 @@ class IbWebRequestData(Feed):
         return None
 
     def get_tick(self, symbol: Any, extra_data: Any = None, **kwargs: Any) -> Any:
+        """get_tick method"""
         conid = self._resolve_conid_param(symbol, extra_data)
         field_str = ','.join(
             str(item)
@@ -355,6 +368,7 @@ class IbWebRequestData(Feed):
     def get_depth(
         self, symbol: Any, count: int = 5, extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """get_depth method"""
         return self.get_tick(
             symbol, extra_data=extra_data, fields=['84', '85', '86', '88'], **kwargs
         )
@@ -367,6 +381,7 @@ class IbWebRequestData(Feed):
         extra_data: Any = None,
         **kwargs: Any,
     ) -> Any:
+        """get_kline method"""
         conid = self._resolve_conid_param(symbol, extra_data)
         params = {
             'conid': str(conid),
@@ -406,6 +421,7 @@ class IbWebRequestData(Feed):
         extra_data: Any = None,
         **kwargs: Any,
     ) -> Any:
+        """make_order method"""
         conid = self._resolve_conid_param(symbol, extra_data)
         account_id = self._get_account_id(extra_data)
         side, ib_order_type = self._parse_order_type(order_type)
@@ -436,6 +452,7 @@ class IbWebRequestData(Feed):
     def cancel_order(
         self, symbol: Any, order_id: Any, extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """cancel_order method"""
         return self._delete(
             f'/iserver/account/{self._get_account_id(extra_data)}/order/{order_id}'
         )
@@ -443,6 +460,7 @@ class IbWebRequestData(Feed):
     def get_open_orders(
         self, symbol: Any = None, extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """get_open_orders method"""
         params: dict[str, Any] = {'force': 'true'}
         if self.account_id:
             params['accountId'] = self.account_id
@@ -453,10 +471,10 @@ class IbWebRequestData(Feed):
     def get_position(
         self, symbol: Any = None, extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """get_position method"""
         account_id = self._get_account_id(extra_data)
         if self.has_cookies():
-            try:
-                return self._get(
+            try: return self._get(
                     f'/portfolio/{account_id}/positions/{kwargs.get("page_id", 0)}'
                 )
             except Exception as exc:
@@ -471,11 +489,13 @@ class IbWebRequestData(Feed):
     def get_account(
         self, symbol: str = 'ALL', extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """get_account method"""
         return self._get(f'/iserver/account/{self._get_account_id(extra_data)}/summary')
 
     def get_balance(
         self, symbol: Any = None, extra_data: Any = None, **kwargs: Any
     ) -> Any:
+        """get_balance method"""
         return self._get(f'/iserver/account/{self._get_account_id(extra_data)}/summary')
 
     def get_deals(
@@ -487,6 +507,7 @@ class IbWebRequestData(Feed):
         extra_data: Any = None,
         **kwargs: Any,
     ) -> Any:
+        """get_deals method"""
         return self._get('/iserver/account/trades')
 
     def _resolve_conid_param(self, symbol: Any, extra_data: Any = None) -> Any:
@@ -494,8 +515,7 @@ class IbWebRequestData(Feed):
             return symbol
         if isinstance(extra_data, dict) and 'conid' in extra_data:
             return extra_data['conid']
-        try:
-            return int(symbol)
+        try: return int(symbol)
         except (TypeError, ValueError):
             pass
         conid = self.resolve_conid(str(symbol), self.asset_type)
@@ -526,7 +546,9 @@ class IbWebRequestData(Feed):
 
 
 class IbWebRequestDataStock(IbWebRequestData):
+    """Class IbWebRequestDataStock"""
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
+        """__init__ method"""
         super().__init__(data_queue, **kwargs)
         self.asset_type = kwargs.get('asset_type', 'STK')
         self._params = IbWebExchangeDataStock()
@@ -534,7 +556,9 @@ class IbWebRequestDataStock(IbWebRequestData):
 
 
 class IbWebRequestDataFuture(IbWebRequestData):
+    """Class IbWebRequestDataFuture"""
     def __init__(self, data_queue: Any = None, **kwargs: Any) -> None:
+        """__init__ method"""
         super().__init__(data_queue, **kwargs)
         self.asset_type = kwargs.get('asset_type', 'FUT')
         self._params = IbWebExchangeDataFuture()

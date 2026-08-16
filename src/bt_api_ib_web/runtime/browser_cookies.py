@@ -1,3 +1,4 @@
+"""Module documentation"""
 from __future__ import annotations
 
 import json
@@ -9,6 +10,7 @@ from bt_api_base.logging_factory import get_logger
 
 
 def extract_cookie_string(cookie_str: str) -> dict[str, str]:
+    """extract_cookie_string function"""
     cookies: dict[str, str] = {}
     if not cookie_str:
         return cookies
@@ -23,6 +25,7 @@ def extract_cookie_string(cookie_str: str) -> dict[str, str]:
 def get_cookies_from_browser(
     domain: str = 'localhost:5000', browser: str = 'chrome', path: str | None = None
 ) -> dict[str, str]:
+    """get_cookies_from_browser function"""
     try:
         import browser_cookie3
     except ImportError:
@@ -62,6 +65,7 @@ def get_cookies_from_browser(
 
 
 def get_cookies_from_file(file_path: str) -> dict[str, str]:
+    """get_cookies_from_file function"""
     path = Path(file_path).expanduser()
     if not path.exists():
         return {}
@@ -82,6 +86,7 @@ def get_cookies_from_file(file_path: str) -> dict[str, str]:
 
 
 def get_cookies_from_netscape(file_path: str) -> dict[str, str]:
+    """get_cookies_from_netscape function"""
     path = Path(file_path).expanduser()
     if not path.exists():
         return {}
@@ -106,6 +111,7 @@ def get_ibkr_cookies(
     browser: str = 'chrome',
     cookie_path: str = '/sso',
 ) -> dict[str, str]:
+    """get_ibkr_cookies function"""
     if cookie_source is None or cookie_source == 'browser':
         return get_cookies_from_browser(
             domain=urlparse(base_url).netloc,
@@ -123,6 +129,7 @@ def get_ibkr_cookies(
 
 
 def save_cookies_to_file(cookies: dict[str, str], file_path: str) -> None:
+    """save_cookies_to_file function"""
     path = Path(file_path).expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open('w', encoding='utf-8') as handle:

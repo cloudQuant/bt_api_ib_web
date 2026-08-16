@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +7,7 @@ from bt_api_ib_web.containers.ib._base import _IbContainerBase, _to_float
 
 
 class IbPositionData(_IbContainerBase):
+    """Class IbPositionData"""
     def __init__(
         self,
         position_info: Any,
@@ -13,6 +15,7 @@ class IbPositionData(_IbContainerBase):
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(
             'position_info',
             position_info,
@@ -33,6 +36,7 @@ class IbPositionData(_IbContainerBase):
         self.currency: str | None = None
 
     def init_data(self) -> IbPositionData:
+        """init_data method"""
         if self._initialized:
             return self
         info = self.position_info if isinstance(self.position_info, dict) else {}
@@ -50,36 +54,47 @@ class IbPositionData(_IbContainerBase):
         return self
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.sec_type or self.asset_type)
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.contract_symbol or self.symbol_name or '')
 
     def get_position_volume(self) -> float:
+        """get_position_volume method"""
         return self.position_val or 0.0
 
     def get_avg_price(self) -> float:
+        """get_avg_price method"""
         return self.avg_cost or 0.0
 
     def get_mark_price(self) -> float | None:
+        """get_mark_price method"""
         return self.market_price_val
 
     def get_liquidation_price(self) -> None:
+        """get_liquidation_price method"""
         return None
 
     def get_initial_margin(self) -> float:
+        """get_initial_margin method"""
         return 0.0
 
     def get_maintain_margin(self) -> float:
+        """get_maintain_margin method"""
         return 0.0
 
     def get_position_unrealized_pnl(self) -> float:
+        """get_position_unrealized_pnl method"""
         return self.unrealized_pnl_val or 0.0
 
     def get_position_funding_value(self) -> float:
+        """get_position_funding_value method"""
         return 0.0
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         return {
             'exchange_name': self.exchange_name,
             'account': self.account,

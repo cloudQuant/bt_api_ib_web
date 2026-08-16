@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +7,7 @@ from bt_api_ib_web.containers.ib._base import _IbContainerBase, _to_float, _to_i
 
 
 class IbTickerData(_IbContainerBase):
+    """Class IbTickerData"""
     def __init__(
         self,
         ticker_info: Any,
@@ -13,6 +15,7 @@ class IbTickerData(_IbContainerBase):
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(
             'ticker_info',
             ticker_info,
@@ -35,6 +38,7 @@ class IbTickerData(_IbContainerBase):
         self.timestamp_val: float | str | None = None
 
     def init_data(self) -> IbTickerData:
+        """init_data method"""
         if self._initialized:
             return self
         info = self.ticker_info if isinstance(self.ticker_info, dict) else {}
@@ -54,6 +58,7 @@ class IbTickerData(_IbContainerBase):
         return self
 
     def get_local_update_time(self) -> float:
+        """get_local_update_time method"""
         return (
             float(self.timestamp_val)
             if isinstance(self.timestamp_val, (int, float))
@@ -61,15 +66,19 @@ class IbTickerData(_IbContainerBase):
         )
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.contract_symbol or self.symbol_name or '')
 
     def get_ticker_symbol_name(self) -> str | None:
+        """get_ticker_symbol_name method"""
         return self.contract_symbol or self.symbol_name
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.asset_type)
 
     def get_server_time(self) -> float | None:
+        """get_server_time method"""
         return (
             float(self.timestamp_val)
             if isinstance(self.timestamp_val, (int, float))
@@ -77,24 +86,31 @@ class IbTickerData(_IbContainerBase):
         )
 
     def get_bid_price(self) -> float | None:
+        """get_bid_price method"""
         return self.bid_val
 
     def get_ask_price(self) -> float | None:
+        """get_ask_price method"""
         return self.ask_val
 
     def get_bid_volume(self) -> float | None:
+        """get_bid_volume method"""
         return self.bid_size_val
 
     def get_ask_volume(self) -> float | None:
+        """get_ask_volume method"""
         return self.ask_size_val
 
     def get_last_price(self) -> float | None:
+        """get_last_price method"""
         return self.last_val
 
     def get_last_volume(self) -> float | None:
+        """get_last_volume method"""
         return self.last_size_val
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         return {
             'exchange_name': self.exchange_name,
             'symbol': self.contract_symbol,

@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -20,6 +21,7 @@ IB_ORDER_STATUS_MAP = {
 
 
 class IbOrderData(_IbContainerBase):
+    """Class IbOrderData"""
     def __init__(
         self,
         order_info: Any,
@@ -27,6 +29,7 @@ class IbOrderData(_IbContainerBase):
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(
             'order_info',
             order_info,
@@ -52,6 +55,7 @@ class IbOrderData(_IbContainerBase):
         self.last_fill_time: str | None = None
 
     def init_data(self) -> IbOrderData:
+        """init_data method"""
         if self._initialized:
             return self
         info = self.order_info if isinstance(self.order_info, dict) else {}
@@ -75,51 +79,67 @@ class IbOrderData(_IbContainerBase):
         return self
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.asset_type)
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.symbol_name or '')
 
     def get_server_time(self) -> str | None:
+        """get_server_time method"""
         return self.last_fill_time
 
     def get_local_update_time(self) -> str | None:
+        """get_local_update_time method"""
         return self.last_fill_time
 
     def get_order_id(self) -> int | str | None:
+        """get_order_id method"""
         return self.order_id_val
 
     def get_client_order_id(self) -> int | str | None:
+        """get_client_order_id method"""
         return self.perm_id
 
     def get_order_size(self) -> float:
+        """get_order_size method"""
         return self.total_quantity
 
     def get_order_price(self) -> float:
+        """get_order_price method"""
         return self.lmt_price
 
     def get_order_side(self) -> str | None:
+        """get_order_side method"""
         return self.action.lower() if self.action else None
 
     def get_order_status(self) -> OrderStatus | None:
+        """get_order_status method"""
         return self.status_val
 
     def get_executed_qty(self) -> float:
+        """get_executed_qty method"""
         return self.filled
 
     def get_order_symbol_name(self) -> str:
+        """get_order_symbol_name method"""
         return str(self.symbol_name or '')
 
     def get_order_type(self) -> str | None:
+        """get_order_type method"""
         return self.order_type_val
 
     def get_order_avg_price(self) -> float:
+        """get_order_avg_price method"""
         return self.avg_fill_price
 
     def get_order_time_in_force(self) -> str | None:
+        """get_order_time_in_force method"""
         return self.tif
 
     def get_order_exchange_id(self) -> str:
+        """get_order_exchange_id method"""
         return 'SMART'
 
     def __str__(self) -> str:

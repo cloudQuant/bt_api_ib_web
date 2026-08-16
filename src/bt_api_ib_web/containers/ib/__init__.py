@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from bt_api_ib_web.containers.ib.ib_account import IbAccountData
 from bt_api_ib_web.containers.ib.ib_bar import IbBarData
 from bt_api_ib_web.containers.ib.ib_contract import IbContract

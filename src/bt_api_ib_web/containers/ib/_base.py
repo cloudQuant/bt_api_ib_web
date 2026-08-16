@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -23,6 +24,7 @@ class _IbContainerBase:
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         setattr(self, payload_name, payload)
         self.event = payload
         self.symbol_name = symbol_name
@@ -31,4 +33,5 @@ class _IbContainerBase:
         self._initialized = False
 
     def get_exchange_name(self) -> str:
+        """get_exchange_name method"""
         return str(self.exchange_name)

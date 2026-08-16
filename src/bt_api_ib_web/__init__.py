@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from bt_api_ib_web.exchange_data import (
     IbWebExchangeData,
     IbWebExchangeDataForex,

@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +7,7 @@ from bt_api_ib_web.containers.ib._base import _IbContainerBase, _to_float
 
 
 class IbTradeData(_IbContainerBase):
+    """Class IbTradeData"""
     def __init__(
         self,
         trade_info: Any,
@@ -13,6 +15,7 @@ class IbTradeData(_IbContainerBase):
         asset_type: Any = 'STK',
         has_been_json_encoded: Any = False,
     ) -> None:
+        """__init__ method"""
         super().__init__(
             'trade_info',
             trade_info,
@@ -34,6 +37,7 @@ class IbTradeData(_IbContainerBase):
         self.exchange_val: str | None = None
 
     def init_data(self) -> IbTradeData:
+        """init_data method"""
         if self._initialized:
             return self
         info = self.trade_info if isinstance(self.trade_info, dict) else {}
@@ -52,45 +56,59 @@ class IbTradeData(_IbContainerBase):
         return self
 
     def get_asset_type(self) -> str:
+        """get_asset_type method"""
         return str(self.asset_type)
 
     def get_symbol_name(self) -> str:
+        """get_symbol_name method"""
         return str(self.symbol_name or '')
 
     def get_server_time(self) -> str | None:
+        """get_server_time method"""
         return self.exec_time
 
     def get_trade_id(self) -> str | None:
+        """get_trade_id method"""
         return str(self.exec_id) if self.exec_id is not None else None
 
     def get_order_id(self) -> str | int | None:
+        """get_order_id method"""
         return self.order_id_val
 
     def get_client_order_id(self) -> str | int | None:
+        """get_client_order_id method"""
         return self.perm_id
 
     def get_trade_side(self) -> str:
+        """get_trade_side method"""
         return 'buy' if self.side == 'BOT' else 'sell'
 
     def get_trade_offset(self) -> None:
+        """get_trade_offset method"""
         return None
 
     def get_trade_price(self) -> float:
+        """get_trade_price method"""
         return self.price_val
 
     def get_trade_volume(self) -> float:
+        """get_trade_volume method"""
         return self.shares
 
     def get_trade_time(self) -> str | None:
+        """get_trade_time method"""
         return self.exec_time
 
     def get_trade_fee(self) -> float:
+        """get_trade_fee method"""
         return self.commission_val or 0.0
 
     def get_trade_fee_symbol(self) -> str:
+        """get_trade_fee_symbol method"""
         return 'USD'
 
     def get_all_data(self) -> dict[str, Any]:
+        """get_all_data method"""
         return {
             'exchange_name': self.exchange_name,
             'exec_id': self.exec_id,

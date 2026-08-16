@@ -1,3 +1,4 @@
+"""Module-level docstring."""
 from __future__ import annotations
 
 import queue
@@ -15,7 +16,9 @@ from bt_api_ib_web.runtime.stream import IbWebAccountStream, IbWebDataStream
 
 
 class IbWebGatewayAdapter(BaseGatewayAdapter):
+    """Class IbWebGatewayAdapter"""
     def __init__(self, **kwargs: Any) -> None:
+        """__init__ method"""
         normalized = dict(kwargs)
         self.asset_type = _normalize_asset_type(normalized.get('asset_type'))
         normalized['asset_type'] = self.asset_type
@@ -38,6 +41,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         )
 
     def connect(self) -> None:
+        """connect method"""
         if self.running:
             return
         self.feed.connect()
@@ -54,6 +58,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         self.thread.start()
 
     def disconnect(self) -> None:
+        """disconnect method"""
         self.running = False
         if self.thread is not None:
             self.thread.join(timeout=1.0)
@@ -66,6 +71,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         self.account_stream = None
 
     def subscribe_symbols(self, symbols: list[str]) -> dict[str, Any]:
+        """subscribe_symbols method"""
         done: list[str] = []
         topics: list[dict[str, Any]] = []
         for raw in symbols:
@@ -81,6 +87,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         return {'symbols': done}
 
     def get_balance(self) -> dict[str, Any]:
+        """get_balance method"""
         response = self.feed.get_balance()
         if isinstance(response, dict):
             cash = _coerce_float(
@@ -104,6 +111,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         return {'cash': 0.0, 'value': 0.0, 'raw': response}
 
     def get_positions(self) -> list[dict[str, Any]]:
+        """get_positions method"""
         try:
             response = self.feed.get_position()
         except NotImplementedError:
@@ -118,6 +126,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         return []
 
     def place_order(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """place_order method"""
         symbol = str(payload.get('data_name') or payload.get('symbol') or '').strip()
         side = str(payload.get('side') or 'buy').lower()
         order_type = str(payload.get('order_type') or '').strip().lower()
@@ -152,6 +161,7 @@ class IbWebGatewayAdapter(BaseGatewayAdapter):
         }
 
     def cancel_order(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """cancel_order method"""
         symbol = str(
             payload.get('data_name')
             or payload.get('symbol')
@@ -304,8 +314,7 @@ def _conid_from_topic(value: Any) -> str:
 
 
 def _safe_int(value: Any) -> int:
-    try:
-        return int(value)
+    try: return int(value)
     except (TypeError, ValueError):
         return 0
 
@@ -313,8 +322,7 @@ def _safe_int(value: Any) -> int:
 def _coerce_float(value: Any, default: float | None) -> float | None:
     if value in (None, ''):
         return default
-    try:
-        return float(value)
+    try: return float(value)
     except (TypeError, ValueError):
         return default
 
