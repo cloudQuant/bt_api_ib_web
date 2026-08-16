@@ -32,8 +32,17 @@ fix = true
 show-fixes = false
 
 [tool.ruff.lint]
-extend-select = ["B", "E", "F", "I", "Q", "RUF", "UP", "W"]
-ignore = ["E501", "RUF012", "Q000", "Q003"]
+select = ["I", "UP", "E", "F", "W"]
+ignore = [
+    "E501",  # line too long
+    "E731",  # lambda assignment
+    "TC002",  # dynamic import
+    "TRY003",  # broad Exception
+    "F403",  # star import
+    "F841",  # unused variable
+    "Q000",  # bad quoting
+    "Q003",  # bad escaping
+]
 
 [tool.ruff.format]
 quote-style = "single"

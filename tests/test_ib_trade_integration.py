@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
 from importlib import import_module
+
+import pytest
 
 IbTradeData = import_module("bt_api_ib_web.containers.ib.ib_trade").IbTradeData
 
