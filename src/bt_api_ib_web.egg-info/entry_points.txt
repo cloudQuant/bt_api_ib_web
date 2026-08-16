@@ -1,2 +1,0 @@
-[bt_api.plugins]
-ib_web = bt_api_ib_web.plugin:register_plugin
