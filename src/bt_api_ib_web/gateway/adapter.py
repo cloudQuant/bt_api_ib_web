@@ -416,7 +416,8 @@ def _conid_from_topic(value: Any) -> str:
 
 
 def _safe_int(value: Any) -> int:
-    try: return int(value)
+    try:
+        return int(value)
     except (TypeError, ValueError):
         return 0
 

@@ -36,7 +36,8 @@ def to_relative_path(path_value: str | Path, base_dir: str | Path | None = None)
     root = (
         Path(base_dir).expanduser().resolve() if base_dir else project_root().resolve()
     )
-    try: return target.relative_to(root).as_posix()
+    try:
+        return target.relative_to(root).as_posix()
     except ValueError:
         return os.path.relpath(target, root).replace('\\', '/')
 
@@ -90,7 +91,8 @@ def load_ib_web_settings(
         return str(value).strip().lower() in {'1', 'true', 'yes', 'on'}
 
     def pick_int(name: str, default: int) -> int:
-        try: return int(pick(name, default))
+        try:
+            return int(pick(name, default))
         except (TypeError, ValueError):
             return default
 

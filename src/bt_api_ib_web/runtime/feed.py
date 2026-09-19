@@ -163,7 +163,8 @@ class IbWebRequestData(Feed):
             request_cookies = {**self._loaded_cookies, **request_cookies}
         attempted_fallback = False
         while True:
-            try: return self._http.request(
+            try:
+                return self._http.request(
                     method=method,
                     url=f'{self.base_url}{endpoint}',
                     headers=headers,
@@ -474,7 +475,8 @@ class IbWebRequestData(Feed):
         """get_position method"""
         account_id = self._get_account_id(extra_data)
         if self.has_cookies():
-            try: return self._get(
+            try:
+                return self._get(
                     f'/portfolio/{account_id}/positions/{kwargs.get("page_id", 0)}'
                 )
             except Exception as exc:
@@ -515,7 +517,8 @@ class IbWebRequestData(Feed):
             return symbol
         if isinstance(extra_data, dict) and 'conid' in extra_data:
             return extra_data['conid']
-        try: return int(symbol)
+        try:
+            return int(symbol)
         except (TypeError, ValueError):
             pass
         conid = self.resolve_conid(str(symbol), self.asset_type)

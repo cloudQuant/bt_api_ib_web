@@ -1,6 +1,6 @@
 """
 Tests for IB Web API Exchange Data
- IB Web API 
+ IB Web API
 
  ib.yaml , Python .
 """
@@ -295,7 +295,7 @@ class TestIbWebExchangeDataBase:
         """base method"""
         return IbWebExchangeData()
 
-    # 
+    #
     def test_class_constants(self, base):
         """test_class_constants method"""
         assert base.PROD_REST_URL == "https://api.interactivebrokers.com"
@@ -446,7 +446,7 @@ class TestIbWebExchangeDataBase:
 
 
 # ═══════════════════════════════════════════════════════════════
-# 5. REST 
+# 5. REST
 # ═══════════════════════════════════════════════════════════════
 
 
@@ -462,7 +462,7 @@ class TestRestPaths:
         """test_rest_paths_not_empty method"""
         assert len(stk.rest_paths) >= 40
 
-    # 
+    #
     def test_path_auth_status(self, stk):
         """test_path_auth_status method"""
         assert stk.rest_paths["auth_status"] == "POST /iserver/auth/status"
@@ -475,7 +475,7 @@ class TestRestPaths:
         """test_path_oauth_token method"""
         assert stk.rest_paths["oauth_token"] == "POST /oauth/token"
 
-    # 
+    #
     def test_path_search_stocks(self, stk):
         """test_path_search_stocks method"""
         assert stk.rest_paths["search_stocks"] == "GET /trsrv/stocks"
@@ -496,7 +496,7 @@ class TestRestPaths:
         """test_path_secdef_info method"""
         assert stk.rest_paths["secdef_info"] == "GET /iserver/secdef/info"
 
-    # 
+    #
     def test_path_market_snapshot(self, stk):
         """test_path_market_snapshot method"""
         assert stk.rest_paths["market_snapshot"] == "GET /iserver/marketdata/snapshot"
@@ -520,7 +520,7 @@ class TestRestPaths:
         """test_path_get_kline method"""
         assert stk.rest_paths["get_kline"] == "GET /iserver/marketdata/history"
 
-    # 
+    #
     def test_path_make_order(self, stk):
         """test_path_make_order method"""
         assert stk.rest_paths["make_order"] == "POST /iserver/account/{accountId}/orders"
@@ -547,7 +547,7 @@ class TestRestPaths:
         """test_path_get_deals method"""
         assert stk.rest_paths["get_deals"] == "GET /iserver/trades"
 
-    # 
+    #
     def test_path_portfolio_accounts(self, stk):
         """test_path_portfolio_accounts method"""
         assert stk.rest_paths["portfolio_accounts"] == "GET /portfolio/accounts"
@@ -613,7 +613,7 @@ class TestRestPaths:
         """test_path_sso_url method"""
         assert stk.rest_paths["sso_url"] == "GET /gw/api/v1/sso/url"
 
-    # 
+    #
     def test_path_fyi_unread(self, stk):
         """test_path_fyi_unread method"""
         assert stk.rest_paths["fyi_unread"] == "GET /fyi/unreadnumber"
@@ -626,7 +626,7 @@ class TestRestPaths:
         """test_path_fyi_settings method"""
         assert stk.rest_paths["fyi_settings"] == "GET /fyi/settings"
 
-    # 
+    #
     def test_path_not_found_raises(self, stk):
         """test_path_not_found_raises method"""
         with pytest.raises(NotImplementedError):
@@ -634,7 +634,7 @@ class TestRestPaths:
 
 
 # ═══════════════════════════════════════════════════════════════
-# 6. get_rest_url 
+# 6. get_rest_url
 # ═══════════════════════════════════════════════════════════════
 
 
@@ -708,7 +708,7 @@ class TestGetRestUrl:
 
 
 # ═══════════════════════════════════════════════════════════════
-# 7. WebSocket 
+# 7. WebSocket
 # ═══════════════════════════════════════════════════════════════
 
 
@@ -783,7 +783,7 @@ class TestSubclassExchangeNames:
 
 
 # ═══════════════════════════════════════════════════════════════
-# 9. 
+# 9.
 # ═══════════════════════════════════════════════════════════════
 
 
@@ -878,7 +878,7 @@ class TestSubclassConsistency:
 
 
 # ═══════════════════════════════════════════════════════════════
-# 10. 
+# 10.
 # ═══════════════════════════════════════════════════════════════
 
 
@@ -916,7 +916,7 @@ class TestRateLimits:
 
 
 # ═══════════════════════════════════════════════════════════════
-# 11. ExchangeData 
+# 11. ExchangeData
 # ═══════════════════════════════════════════════════════════════
 
 
