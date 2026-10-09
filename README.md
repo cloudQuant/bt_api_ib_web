@@ -1,4 +1,4 @@
-# Interactive Brokers Web API
+﻿# Interactive Brokers Web API
 
 Interactive Brokers Web API plugin for bt_api, supporting stock and futures trading via IB Web API.
 
