@@ -67,6 +67,7 @@ class IbWebRequestData(Feed):
         self._last_session_check = 0.0
         self._session_check_interval = 60.0
         self._subscribed_conids: set[int] = set()
+        self._symbol_info_cache: dict[str, dict[str, Any]] = {}
         self._cookie_load_error: Exception | None = None
         self._last_connect_error: Exception | None = None
         self._cookies = kwargs.get('cookies')
@@ -351,6 +352,105 @@ class IbWebRequestData(Feed):
                 return response[0].get('conid')
         return None
 
+    def get_symbol_info(self, symbol: Any, asset_type: str | None = None) -> dict[str, Any]:
+        """Return IB contract metadata through the direct Client Portal API."""
+        requested = str(symbol or '').strip()
+        if not requested:
+            return {}
+        sec_type = str(asset_type or self.asset_type or 'STK').strip().upper()
+        cache_key = f'{sec_type}:{requested.upper()}'
+        cached = self._symbol_info_cache.get(cache_key)
+        if cached is not None:
+            return dict(cached)
+
+        contract: dict[str, Any] = {}
+        if sec_type == 'STK':
+            try:
+                contract = _first_stock_contract(requested, self.search_stocks(requested))
+            except Exception:
+                contract = {}
+        if not contract:
+            try:
+                contract = _first_contract(self.search_contract(requested, sec_type))
+            except Exception:
+                contract = {}
+
+        conid = _first_mapping_value(contract, 'conid', 'con_id', 'contract_id')
+        if conid in (None, ''):
+            try:
+                conid = self.resolve_conid(requested, sec_type)
+            except Exception:
+                conid = None
+        details: dict[str, Any] = {}
+        if conid not in (None, ''):
+            try:
+                details = _first_mapping(
+                    self._get('/iserver/secdef/info', params={'conid': str(conid)})
+                )
+            except Exception:
+                details = {}
+
+        data = dict(contract)
+        data.update(details)
+        if conid not in (None, ''):
+            data.setdefault('conid', conid)
+        data.setdefault('symbol', requested)
+        data.setdefault('secType', sec_type)
+        multiplier = _coerce_optional_float(
+            _first_mapping_value(
+                data,
+                'multiplier',
+                'contractMultiplier',
+                'contract_multiplier',
+                'contractSize',
+                'contract_size',
+            )
+        )
+        if multiplier is None and sec_type == 'STK':
+            multiplier = 1.0
+        min_tick = _coerce_optional_float(
+            _first_mapping_value(data, 'minTick', 'min_tick', 'tick_size', 'price_tick')
+        )
+        exchange = _first_mapping_text(data, 'exchange', 'listingExchange', 'validExchanges')
+        local_symbol = _first_mapping_text(data, 'localSymbol', 'local_symbol', 'contractDesc')
+        resolved_symbol = _first_mapping_text(data, 'symbol', 'ticker') or requested
+        contract_type = _first_mapping_text(data, 'secType', 'sec_type') or sec_type
+        spec = {
+            'source': 'ib_web_direct',
+            'symbol': resolved_symbol,
+            'data_name': resolved_symbol,
+            'instrument': resolved_symbol,
+            'localSymbol': local_symbol,
+            'local_symbol': local_symbol,
+            'conid': conid,
+            'contract_id': conid,
+            'secType': contract_type,
+            'sec_type': contract_type,
+            'asset_type': contract_type,
+            'exchange': exchange,
+            'exchange_id': exchange,
+            'currency': _first_mapping_text(data, 'currency', 'Currency'),
+            'price_tick': min_tick,
+            'tick_size': min_tick,
+            'multiplier': multiplier,
+            'contract_multiplier': multiplier,
+            'contract_size': multiplier,
+            'last_trade_date': _first_mapping_value(
+                data, 'lastTradingDay', 'lastTradeDateOrContractMonth', 'last_trade_date'
+            ),
+        }
+        result = {name: value for name, value in spec.items() if value not in (None, '')}
+        if result:
+            aliases = (
+                cache_key,
+                f'{sec_type}:{str(conid).upper()}' if conid not in (None, '') else '',
+                f'{sec_type}:{local_symbol.upper()}' if local_symbol else '',
+            )
+            for alias in aliases:
+                if alias:
+                    self._symbol_info_cache[alias] = dict(result)
+        return result
+
     def get_tick(self, symbol: Any, extra_data: Any = None, **kwargs: Any) -> Any:
         """get_tick method"""
         conid = self._resolve_conid_param(symbol, extra_data)
@@ -566,3 +666,71 @@ class IbWebRequestDataFuture(IbWebRequestData):
         self.asset_type = kwargs.get('asset_type', 'FUT')
         self._params = IbWebExchangeDataFuture()
         self._params.rest_url = self.base_url
+
+
+def _first_mapping(value: Any) -> dict[str, Any]:
+    if hasattr(value, 'get_input_data'):
+        value = value.get_input_data()
+    elif hasattr(value, 'get_data'):
+        value = value.get_data()
+    if isinstance(value, list):
+        value = value[0] if value else {}
+    if isinstance(value, dict):
+        nested = value.get('data')
+        if isinstance(nested, list) and nested:
+            return _first_mapping(nested[0])
+        if isinstance(nested, dict):
+            return nested
+        return value
+    return {}
+
+
+def _first_contract(value: Any) -> dict[str, Any]:
+    if isinstance(value, list):
+        return next((row for row in value if isinstance(row, dict)), {})
+    if isinstance(value, dict):
+        rows = value.get('contracts') or value.get('results')
+        if isinstance(rows, list):
+            return next((row for row in rows if isinstance(row, dict)), {})
+        return value
+    return {}
+
+
+def _first_stock_contract(symbol: str, value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    entries = value.get(symbol)
+    if entries is None:
+        entries = next(
+            (rows for name, rows in value.items() if str(name).upper() == symbol.upper()),
+            None,
+        )
+    if isinstance(entries, dict):
+        entries = [entries]
+    if not isinstance(entries, list):
+        return {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        contract = _first_contract(entry.get('contracts', entry))
+        if contract:
+            return contract
+    return {}
+
+
+def _first_mapping_value(payload: dict[str, Any], *names: str) -> Any:
+    return next((payload[name] for name in names if payload.get(name) not in (None, '')), None)
+
+
+def _first_mapping_text(payload: dict[str, Any], *names: str) -> str:
+    value = _first_mapping_value(payload, *names)
+    return str(value or '').strip()
+
+
+def _coerce_optional_float(value: Any) -> float | None:
+    if isinstance(value, bool) or value in (None, ''):
+        return None
+    try:
+        return float(str(value).replace(',', '').strip())
+    except (TypeError, ValueError):
+        return None

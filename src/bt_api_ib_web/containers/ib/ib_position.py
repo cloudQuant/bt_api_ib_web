@@ -40,16 +40,74 @@ class IbPositionData(_IbContainerBase):
         if self._initialized:
             return self
         info = self.position_info if isinstance(self.position_info, dict) else {}
-        self.account = info.get('account', '')
-        self.contract_symbol = info.get('symbol', self.symbol_name)
-        self.sec_type = info.get('secType', self.asset_type)
-        self.position_val = _to_float(info.get('position'))
-        self.avg_cost = _to_float(info.get('avgCost'))
-        self.market_price_val = _to_float(info.get('marketPrice'))
-        self.market_value = _to_float(info.get('marketValue'))
-        self.unrealized_pnl_val = _to_float(info.get('unrealizedPNL'))
-        self.realized_pnl_val = _to_float(info.get('realizedPNL'))
-        self.currency = str(info.get('currency', 'USD'))
+        self.account = _first_text(info, ('account', 'acctId', 'AccountID'))
+        self.contract_symbol = _first_text(
+            info,
+            (
+                'data_name',
+                'symbol',
+                'localSymbol',
+                'local_symbol',
+                'contractDesc',
+                'contract_desc',
+                'description',
+                'ticker',
+                'conid',
+            ),
+        ) or self.symbol_name
+        self.sec_type = _first_text(
+            info, ('sec_type', 'secType', 'asset_type', 'assetClass')
+        ) or self.asset_type
+        self.position_val = _to_float(
+            _first_value(info, 'size', 'volume', 'position', 'qty', 'quantity')
+        )
+        self.avg_cost = _to_float(
+            _first_value(
+                info,
+                'price',
+                'avg_price',
+                'average_price',
+                'avgCost',
+                'avgPrice',
+                'averageCost',
+            )
+        )
+        self.market_price_val = _to_float(
+            _first_value(
+                info,
+                'current_price',
+                'latest_price',
+                'last_price',
+                'marketPrice',
+                'mktPrice',
+                'markPrice',
+                'market_price',
+            )
+        )
+        self.market_value = _to_float(
+            _first_value(info, 'market_value', 'marketValue', 'mktValue', 'value')
+        )
+        self.unrealized_pnl_val = _to_float(
+            _first_value(
+                info,
+                'unrealized_pnl',
+                'unrealizedPNL',
+                'UnrealizedPnL',
+                'unrealizedPnl',
+                'unrealizedpnl',
+            )
+        )
+        self.realized_pnl_val = _to_float(
+            _first_value(
+                info,
+                'realized_pnl',
+                'realizedPNL',
+                'RealizedPnL',
+                'realizedPnl',
+                'realizedpnl',
+            )
+        )
+        self.currency = str(_first_value(info, 'currency', 'Currency') or 'USD')
         self._initialized = True
         return self
 
@@ -108,3 +166,53 @@ class IbPositionData(_IbContainerBase):
             'realized_pnl': self.realized_pnl_val,
             'currency': self.currency,
         }
+
+    def get_position_projection(self) -> dict[str, Any]:
+        """Return the native position in a flat, consumer-friendly shape."""
+        self.init_data()
+        payload = dict(self.position_info) if isinstance(self.position_info, dict) else {}
+        symbol = str(self.contract_symbol or self.symbol_name or '')
+        size = self.position_val or 0.0
+        entry_price = self.avg_cost or 0.0
+        current_price = self.market_price_val
+        sec_type = str(self.sec_type or self.asset_type or '')
+        payload.update(
+            {
+                'account': self.account,
+                'symbol': symbol,
+                'instrument': symbol,
+                'data_name': symbol,
+                'size': size,
+                'volume': abs(size),
+                'price': entry_price,
+                'avg_price': entry_price,
+                'direction': 'short' if size < 0 else 'long',
+                'asset_type': sec_type,
+                'sec_type': sec_type,
+            }
+        )
+        if current_price is not None:
+            payload['current_price'] = current_price
+            payload['latest_price'] = current_price
+            payload['last_price'] = current_price
+        if self.market_value is not None:
+            payload['market_value'] = self.market_value
+        if self.unrealized_pnl_val is not None:
+            payload['unrealized_pnl'] = self.unrealized_pnl_val
+            payload['gross_pnl'] = self.unrealized_pnl_val
+        if self.realized_pnl_val is not None:
+            payload['realized_pnl'] = self.realized_pnl_val
+        return payload
+
+
+def _first_value(payload: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = payload.get(key)
+        if value is not None and value != '':
+            return value
+    return None
+
+
+def _first_text(payload: dict[str, Any], keys: tuple[str, ...]) -> str:
+    value = _first_value(payload, *keys)
+    return str(value or '').strip()

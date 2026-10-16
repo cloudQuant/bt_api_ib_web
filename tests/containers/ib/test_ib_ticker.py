@@ -208,3 +208,32 @@ class TestIbTickerData:
         assert result["bid"] == 150.0
         assert result["ask"] == 150.5
         assert result["volume"] == 1000000
+
+    def test_direct_market_projection_maps_client_portal_field_ids_and_topic_conid(self):
+        ticker = IbTickerData(
+            {
+                "topic": "smd+265598+84,85,86,88,31,87",
+                "84": "149.5",
+                "85": "12",
+                "86": "150.5",
+                "88": "13",
+                "31": "150",
+                "87": "4567",
+                "listingExchange": "NASDAQ",
+            },
+            symbol_name="AAPL",
+            asset_type="STK",
+        )
+
+        projected = ticker.get_market_projection()
+
+        assert projected["symbol"] == "AAPL"
+        assert projected["instrument_id"] == "265598"
+        assert projected["exchange_id"] == "NASDAQ"
+        assert projected["bid_price"] == 149.5
+        assert projected["bid_volume"] == 12
+        assert projected["ask_price"] == 150.5
+        assert projected["ask_volume"] == 13
+        assert projected["last_price"] == projected["price"] == 150
+        assert projected["volume"] == 4567
+        assert projected["timestamp"] is None

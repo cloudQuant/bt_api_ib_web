@@ -137,9 +137,87 @@ class IbAccountData(_IbContainerBase):
             'currency': self.currency,
         }
 
+    def get_balance_projection(self) -> dict[str, Any]:
+        """Return the direct balance fields in a flat, consumer-friendly shape."""
+        self.init_data()
+        info = self.account_info if isinstance(self.account_info, dict) else {}
+        available = _first_float(
+            info,
+            ('available', 'available_funds', 'availablefunds', 'AvailableFunds', 'cash'),
+        )
+        cash_balance = _first_float(
+            info,
+            ('balance', 'CashBalance', 'cashbalance', 'TotalCashValue', 'totalcashvalue'),
+        )
+        value = _first_float(
+            info,
+            ('value', 'equity', 'NetLiquidation', 'netliquidation', 'EquityWithLoanValue'),
+        )
+        used_margin = _first_float(
+            info,
+            ('margin', 'used_margin', 'InitMarginReq', 'initmarginreq', 'MaintMarginReq'),
+        )
+        buying_power = _first_float(info, ('buying_power', 'buyingpower', 'BuyingPower'))
+        unrealized_pnl = _first_float(
+            info, ('unrealized_pnl', 'UnrealizedPnL', 'unrealizedpnl')
+        )
+        if available is None and value is not None and used_margin is not None:
+            available = value - used_margin
+        if available is None:
+            available = cash_balance if cash_balance is not None else 0.0
+        if cash_balance is None:
+            cash_balance = available
+        if value is None:
+            value = cash_balance
+
+        projection = dict(info)
+        projection.update(
+            {
+                'cash': available,
+                'available': available,
+                'available_funds': available,
+                'balance': cash_balance,
+                'value': value,
+                'equity': value,
+            }
+        )
+        if used_margin is not None:
+            projection.setdefault('margin', used_margin)
+            projection.setdefault('used_margin', used_margin)
+        if buying_power is not None:
+            projection.setdefault('buying_power', buying_power)
+        if unrealized_pnl is not None:
+            projection.setdefault('unrealized_pnl', unrealized_pnl)
+        return projection
+
 
 def _first_value(payload: dict[str, Any], *keys: str) -> Any:
     for key in keys:
         if key in payload:
             return payload[key]
     return None
+
+
+def _first_float(payload: dict[str, Any], keys: tuple[str, ...]) -> float | None:
+    for key in keys:
+        if key not in payload:
+            continue
+        value = _optional_float(payload[key])
+        if value is not None:
+            return value
+    return None
+
+
+def _optional_float(value: Any) -> float | None:
+    if isinstance(value, dict):
+        for key in ('amount', 'value', 'balance', 'total'):
+            if key in value:
+                return _optional_float(value[key])
+    if value is None or value == '' or isinstance(value, bool):
+        return None
+    if isinstance(value, str):
+        value = value.strip().replace(',', '')
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None

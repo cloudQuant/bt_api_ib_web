@@ -180,3 +180,38 @@ class TestIbAccountData:
         assert result["account_id"] == "U123456"
         assert result["net_liquidation"] == 100000.0
         assert result["available_funds"] == 75000.0
+
+    def test_direct_balance_projection_preserves_zero_available_funds(self):
+        account = IbAccountData(
+            {
+                "AvailableFunds": 0,
+                "NetLiquidation": 100000,
+                "InitMarginReq": 15000,
+                "CashBalance": 42000,
+            }
+        )
+
+        projected = account.get_balance_projection()
+
+        assert projected["available"] == projected["cash"] == 0.0
+        assert projected["balance"] == 42000.0
+        assert projected["value"] == projected["equity"] == 100000.0
+
+    def test_direct_balance_projection_derives_available_from_equity_and_margin(self):
+        account = IbAccountData(
+            {
+                "NetLiquidation": 100000,
+                "InitMarginReq": 25000,
+                "BuyingPower": 300000,
+                "UnrealizedPnL": -1250,
+            }
+        )
+
+        projected = account.get_balance_projection()
+
+        assert projected["available"] == 75000.0
+        assert projected["available_funds"] == 75000.0
+        assert projected["cash"] == 75000.0
+        assert projected["margin"] == projected["used_margin"] == 25000.0
+        assert projected["buying_power"] == 300000.0
+        assert projected["unrealized_pnl"] == -1250.0

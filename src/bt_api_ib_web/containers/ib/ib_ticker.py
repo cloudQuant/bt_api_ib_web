@@ -25,6 +25,8 @@ class IbTickerData(_IbContainerBase):
         )
         self.ticker_info = ticker_info
         self.contract_symbol: str | None = None
+        self.instrument_id: str | None = None
+        self.exchange_id: str | None = None
         self.bid_val: float | None = None
         self.ask_val: float | None = None
         self.bid_size_val: float | None = None
@@ -42,17 +44,27 @@ class IbTickerData(_IbContainerBase):
         if self._initialized:
             return self
         info = self.ticker_info if isinstance(self.ticker_info, dict) else {}
-        self.contract_symbol = info.get('symbol', self.symbol_name)
-        self.bid_val = float(info['bid']) if info.get('bid') is not None else None
-        self.ask_val = float(info['ask']) if info.get('ask') is not None else None
-        self.bid_size_val = _to_float(info.get('bidSize'))
-        self.ask_size_val = _to_float(info.get('askSize'))
-        self.last_val = float(info['last']) if info.get('last') is not None else None
-        self.last_size_val = _to_float(info.get('lastSize'))
-        self.volume_val = _to_int(info.get('volume'))
-        self.high_val = float(info['high']) if info.get('high') is not None else None
-        self.low_val = float(info['low']) if info.get('low') is not None else None
-        self.close_val = float(info['close']) if info.get('close') is not None else None
+        conid = _first_value(info, 'conidEx', 'conid', 'contract_id') or _topic_conid(
+            info.get('topic')
+        )
+        self.instrument_id = str(conid) if conid not in (None, '') else None
+        self.contract_symbol = str(
+            _first_value(info, 'symbol')
+            or self.symbol_name
+            or self.instrument_id
+            or ''
+        ) or None
+        self.exchange_id = _first_text(info, 'exchange', 'listingExchange') or None
+        self.bid_val = _optional_float(info, 'bid', '84', 'bidPrice')
+        self.ask_val = _optional_float(info, 'ask', '86', 'askPrice')
+        self.bid_size_val = _optional_float(info, 'bidSize', '85', 'bid_volume')
+        self.ask_size_val = _optional_float(info, 'askSize', '88', 'ask_volume')
+        self.last_val = _optional_float(info, 'last', '31', 'lastPrice')
+        self.last_size_val = _optional_float(info, 'lastSize')
+        self.volume_val = _optional_int(info, 'volume', '87')
+        self.high_val = _optional_float(info, 'high', 'highPrice')
+        self.low_val = _optional_float(info, 'low', 'lowPrice')
+        self.close_val = _optional_float(info, 'close', 'closePrice')
         self.timestamp_val = info.get('time')
         self._initialized = True
         return self
@@ -114,6 +126,8 @@ class IbTickerData(_IbContainerBase):
         return {
             'exchange_name': self.exchange_name,
             'symbol': self.contract_symbol,
+            'instrument_id': self.instrument_id,
+            'exchange_id': self.exchange_id,
             'bid': self.bid_val,
             'ask': self.ask_val,
             'bid_size': self.bid_size_val,
@@ -126,3 +140,64 @@ class IbTickerData(_IbContainerBase):
             'close': self.close_val,
             'time': self.timestamp_val,
         }
+
+    def get_market_projection(self) -> dict[str, Any]:
+        """Project a direct IB Web market row without emitting or caching it."""
+        self.init_data()
+        return {
+            'exchange_name': self.exchange_name,
+            'symbol': self.contract_symbol,
+            'instrument_id': self.instrument_id,
+            'exchange_id': self.exchange_id,
+            'asset_type': str(self.asset_type).lower(),
+            'timestamp': self.timestamp_val,
+            'price': self.last_val if self.last_val is not None else 0.0,
+            'last_price': self.last_val,
+            'bid_price': self.bid_val,
+            'ask_price': self.ask_val,
+            'bid_volume': self.bid_size_val,
+            'ask_volume': self.ask_size_val,
+            'volume': self.volume_val if self.volume_val is not None else 0,
+        }
+
+
+def _first_value(payload: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = payload.get(key)
+        if value is not None and value != '':
+            return value
+    return None
+
+
+def _first_text(payload: dict[str, Any], *keys: str) -> str:
+    value = _first_value(payload, *keys)
+    return str(value or '').strip()
+
+
+def _optional_float(payload: dict[str, Any], *keys: str) -> float | None:
+    value = _first_value(payload, *keys)
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return _to_float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _optional_int(payload: dict[str, Any], *keys: str) -> int | None:
+    value = _first_value(payload, *keys)
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return _to_int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _topic_conid(value: Any) -> Any:
+    topic = str(value or '').strip()
+    if topic.startswith('smd+'):
+        parts = topic.split('+', 2)
+        if len(parts) >= 2:
+            return parts[1]
+    return None

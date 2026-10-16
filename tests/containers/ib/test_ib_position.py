@@ -160,3 +160,33 @@ class TestIbPositionData:
         assert result["symbol"] == "AAPL"
         assert result["position"] == 100
         assert result["unrealized_pnl"] == 500.0
+
+    def test_direct_position_projection_normalizes_client_portal_aliases(self):
+        position = IbPositionData(
+            {
+                "acctId": "U123456",
+                "contractDesc": "ESZ6",
+                "assetClass": "FUT",
+                "position": -2,
+                "avgPrice": 5012.5,
+                "mktPrice": 5000,
+                "mktValue": -10000,
+                "unrealizedPnl": -25,
+                "realizedPnl": 10,
+            },
+            asset_type="STK",
+        )
+
+        projected = position.get_position_projection()
+
+        assert projected["account"] == "U123456"
+        assert projected["symbol"] == projected["data_name"] == "ESZ6"
+        assert projected["size"] == -2.0
+        assert projected["volume"] == 2.0
+        assert projected["direction"] == "short"
+        assert projected["price"] == projected["avg_price"] == 5012.5
+        assert projected["current_price"] == projected["latest_price"] == 5000.0
+        assert projected["market_value"] == -10000.0
+        assert projected["gross_pnl"] == projected["unrealized_pnl"] == -25.0
+        assert projected["realized_pnl"] == 10.0
+        assert projected["asset_type"] == projected["sec_type"] == "FUT"
