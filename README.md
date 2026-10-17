@@ -23,7 +23,7 @@ This package provides direct Interactive Brokers Client Portal REST/WebSocket re
 - Market projection maps Client Portal fields 84, 85, 86, 88, 31, and 87, including the contract ID from an `smd` topic.
 - Contract search and details include contract ID, tick size, local symbol, currency, and futures multiplier and expiry when IB returns those fields.
 
-These projections are available to direct feed consumers. They do not create a ServiceHost MarketHub stream or a complete `AccountObservation`. The legacy gateway package remains in the source tree pending the complete migration, but its standalone runtime is retired and unsupported as a public integration. Managed live writes must use `ServiceExecutionSession` through service-v2 after the provider is integrated with that host.
+These projections are available to direct feed consumers. They do not create a ServiceHost MarketHub stream or a complete `AccountObservation`. The legacy `IbWebGatewayAdapter` implementation and export have been removed. Managed live writes must use `ServiceExecutionSession` through service-v2 after the provider is integrated with that host.
 
 ### Requirements
 
@@ -97,7 +97,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 - 行情投影映射 Client Portal 字段 84、85、86、88、31 和 87，并可从 `smd` topic 解析合约 ID。
 - 合约搜索和详情可提供合约 ID、最小跳动、local symbol、币种，以及 IB 返回的期货乘数和到期日。
 
-这些投影供直连 feed 使用者调用，不会创建 ServiceHost MarketHub 行情流，也不是完整的 `AccountObservation`。完整迁移完成前，旧 gateway 包仍保留在源码树中；其独立 runtime 已退役，不再作为受支持的公共集成接口。provider 完成宿主集成后，托管实盘写操作必须通过 service-v2 的 `ServiceExecutionSession`。
+这些投影供直连 feed 使用者调用，不会创建 ServiceHost MarketHub 行情流，也不是完整的 `AccountObservation`。旧 `IbWebGatewayAdapter` 实现和导出已移除。provider 完成宿主集成后，托管实盘写操作必须通过 service-v2 的 `ServiceExecutionSession`。
 
 ### 系统要求
 
