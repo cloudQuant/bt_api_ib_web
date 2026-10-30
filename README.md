@@ -139,3 +139,11 @@ MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
 - 通过 [GitHub Issues](https://github.com/cloudQuant/bt_api_ib_web/issues) 反馈问题
 - 邮箱：yunjinqi@gmail.com
+
+## Provider role and integration boundary
+
+`plugin.py` advertises `IB_WEB___STK` and `IB_WEB___FUT` and registers request feeds, typed exchange-data projections, and balance handlers; it does not register `bt_api` stream handlers. This package owns direct IB Client Portal access and projections, not a complete ServiceHost MarketHub stream, `AccountObservation`, or managed write integration. `bt_api_base` supplies the shared plugin protocol and registry; Backtrader owns strategy and backtest logic. Managed writes require provider integration through service-v2 and `ServiceExecutionSession`. See [Trading system architecture](https://github.com/cloudQuant/backtrader/blob/dev/docs/TRADING_SYSTEM_ARCHITECTURE.md).
+
+## 提供方职责与集成边界
+
+`plugin.py` 列出 `IB_WEB___STK` 和 `IB_WEB___FUT`，并注册请求 Feed、类型化交易所数据投影及余额处理器；它没有注册 `bt_api` 流处理器。本包负责直接访问 IB Client Portal 并生成数据投影，不提供完整的 ServiceHost MarketHub 行情流、`AccountObservation` 或托管写入集成。`bt_api_base` 提供共享插件协议和注册表；Backtrader 负责策略与回测逻辑。托管写操作还需通过 service-v2 和 `ServiceExecutionSession` 完成 provider 集成。架构说明：[Trading system architecture](https://github.com/cloudQuant/backtrader/blob/dev/docs/TRADING_SYSTEM_ARCHITECTURE.md)。
