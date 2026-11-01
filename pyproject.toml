@@ -66,3 +66,7 @@ IB_WEB___FUT = "bt_api_base.fee_projection:legacy_fee_projection"
 [project.entry-points."bt_api.order_side_projections"]
 IB_WEB___STK = "bt_api_base.order_side_projection:legacy_order_side_candidates"
 IB_WEB___FUT = "bt_api_base.order_side_projection:legacy_order_side_candidates"
+
+[project.entry-points."bt_api.normalization_policies"]
+IB_WEB___STK = "bt_api_base.normalization_policy:legacy_normalization_policy"
+IB_WEB___FUT = "bt_api_base.normalization_policy:legacy_normalization_policy"
