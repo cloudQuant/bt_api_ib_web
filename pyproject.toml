@@ -62,3 +62,7 @@ quote-style = "single"
 [project.entry-points."bt_api.fee_projections"]
 IB_WEB___STK = "bt_api_base.fee_projection:legacy_fee_projection"
 IB_WEB___FUT = "bt_api_base.fee_projection:legacy_fee_projection"
+
+[project.entry-points."bt_api.order_side_projections"]
+IB_WEB___STK = "bt_api_base.order_side_projection:legacy_order_side_candidates"
+IB_WEB___FUT = "bt_api_base.order_side_projection:legacy_order_side_candidates"
