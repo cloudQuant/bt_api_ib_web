@@ -24,6 +24,10 @@ ib_web = "bt_api_ib_web.plugin:register_plugin"
 IB_WEB___STK = "bt_api_base.order_identity_projection:project_legacy_order_identity"
 IB_WEB___FUT = "bt_api_base.order_identity_projection:project_legacy_order_identity"
 
+[project.entry-points."bt_api.order_request_projections"]
+IB_WEB___STK = "bt_api_base.order_request_projection:legacy_order_request_projection"
+IB_WEB___FUT = "bt_api_base.order_request_projection:legacy_order_request_projection"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
