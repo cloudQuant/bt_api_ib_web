@@ -20,6 +20,10 @@ dependencies = [
 [project.entry-points."bt_api.plugins"]
 ib_web = "bt_api_ib_web.plugin:register_plugin"
 
+[project.entry-points."bt_api.order_identity_projections"]
+IB_WEB___STK = "bt_api_base.order_identity_projection:project_legacy_order_identity"
+IB_WEB___FUT = "bt_api_base.order_identity_projection:project_legacy_order_identity"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
