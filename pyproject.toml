@@ -28,6 +28,10 @@ IB_WEB___FUT = "bt_api_base.order_identity_projection:project_legacy_order_ident
 IB_WEB___STK = "bt_api_base.order_request_projection:legacy_order_request_projection"
 IB_WEB___FUT = "bt_api_base.order_request_projection:legacy_order_request_projection"
 
+[project.entry-points."bt_api.order_quantity_unit_validators"]
+IB_WEB___STK = "bt_api_base.order_quantity_units:validate_generic_order_quantity_units"
+IB_WEB___FUT = "bt_api_base.order_quantity_units:validate_generic_order_quantity_units"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
